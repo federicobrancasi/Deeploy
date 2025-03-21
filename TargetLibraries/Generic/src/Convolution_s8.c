@@ -34,7 +34,8 @@ void Conv2d_s8_s8_s32_NCHW(int8_t const *__restrict__ pSrcA, uint32_t C,
                            int8_t const *__restrict__ pSrcB, uint32_t F,
                            uint32_t P, uint32_t Q, uint32_t SP, uint32_t SQ,
                            int32_t *__restrict__ pDstC, int32_t input_offset,
-                           int32_t output_offset) {
+                           int32_t output_offset,
+                           const int32_t *__restrict__ bias) {
 
   // WIESEP: For now assume padding=0
   uint32_t H_out = (H - P) / SP + 1;
@@ -68,7 +69,7 @@ void Conv2d_s8_s8_s32_NCHW(int8_t const *__restrict__ pSrcA, uint32_t C,
           // printf("\r\n");
         }
         // printf("= %-6ld\r\n", sum);
-        pDstC[f * H_out * W_out + h * W_out + w] = sum + output_offset;
+        pDstC[f * H_out * W_out + h * W_out + w] = sum + bias[f] + output_offset;
       }
     }
   }

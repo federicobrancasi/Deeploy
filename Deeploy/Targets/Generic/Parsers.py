@@ -2149,7 +2149,7 @@ class GenericConv2DParser(Conv2DParser):
         newCtxt, ret = super().parseNodeCtxt(ctxt, node, channels_first)
 
         if ret:
-            inputs = ['data_in', 'weight']
+            inputs = ['data_in', 'weight', 'bias']
             for idx, inputNode in enumerate(node.inputs):
                 self.operatorRepresentation[inputs[idx]] = ctxt.lookup(inputNode.name).name
             return newCtxt, True

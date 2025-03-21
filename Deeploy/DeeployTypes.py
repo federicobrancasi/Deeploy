@@ -3180,6 +3180,15 @@ class NetworkDeployer(NetworkContainer):
             self.exportDeeployState(self.deeployStateDir, _backendPostBindingFilename)
             raise e
 
+        # Add fix for missing bias types
+        for node_name, node in self.ctxt.globalObjects.items():
+            if isinstance(node, ConstantBuffer) and node._type is None:
+                if "bias" in node_name:
+                    from Deeploy.AbstractDataTypes import PointerClass
+                    from Deeploy.CommonExtensions.DataTypes import int32_t
+                    print(f"Fixing missing type for {node_name}")
+                    self.ctxt.annotateType(node_name, PointerClass(int32_t))
+
     # Don't Override this
     def midEnd(self):
         """API hook to be used after finalizing kernel selection; hoist transient buffers, and perform low-level code optimizations (e.g. tiling and static memory allocation)

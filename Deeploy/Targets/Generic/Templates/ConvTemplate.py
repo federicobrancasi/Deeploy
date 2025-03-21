@@ -34,7 +34,7 @@ class _Conv2D_Template(NodeTemplate):
         super().__init__(templateStr)
 
     def alignToContext(self, ctxt: NetworkContext,
-                       operatorRepresentation: OperatorRepresentation) -> Tuple[NetworkContext, Dict, List[str]]:
+                   operatorRepresentation: OperatorRepresentation) -> Tuple[NetworkContext, Dict, List[str]]:
 
         data_in = ctxt.lookup(operatorRepresentation['data_in'])
         data_out = ctxt.lookup(operatorRepresentation['data_out'])
@@ -45,6 +45,13 @@ class _Conv2D_Template(NodeTemplate):
         operatorRepresentation['output_offset'] = 0
         if hasattr(data_out, "_signed") and hasattr(data_out, "nLevels"):
             operatorRepresentation['output_offset'] = -(data_out._signed == 0) * int(data_out.nLevels // 2)
+
+        # Check if bias is available
+        if 'bias' in operatorRepresentation:
+            operatorRepresentation['has_bias'] = True
+        else:
+            operatorRepresentation['has_bias'] = False
+            operatorRepresentation['bias'] = 'NULL'
 
         return ctxt, operatorRepresentation, []
 
@@ -65,7 +72,8 @@ BEGIN_SINGLE_CORE
             ref_${data_out}_${data_in}, ${ch_im_in}, 1, ${dim_im_in_y},
             ${weight}, ${ch_im_out}, 1, ${dim_kernel_y},
             1, ${stride_y},
-            ref_${data_out}_${data_out}, ${input_offset}, ${output_offset}
+            ref_${data_out}_${data_out}, ${input_offset}, ${output_offset},
+            ${bias if has_bias else "NULL"}
         );
         ref_${data_out}_${data_in} += ${batchOffsetIn};
         ref_${data_out}_${data_out} += ${batchOffsetOut};
@@ -89,7 +97,8 @@ BEGIN_SINGLE_CORE
             ref_${data_out}_${data_in}, ${ch_im_in}, ${dim_im_in_x}, ${dim_im_in_y},
             ${weight}, ${ch_im_out}, ${dim_kernel_x}, ${dim_kernel_y},
             ${stride_x}, ${stride_y},
-            ref_${data_out}_${data_out}, ${input_offset}, ${output_offset}
+            ref_${data_out}_${data_out}, ${input_offset}, ${output_offset},
+            ${bias if has_bias else "NULL"}
         );
         ref_${data_out}_${data_in} += ${batchOffsetIn};
         ref_${data_out}_${data_out} += ${batchOffsetOut};
