@@ -34,7 +34,7 @@ class _Conv2D_Template(NodeTemplate):
         super().__init__(templateStr)
 
     def alignToContext(self, ctxt: NetworkContext,
-                   operatorRepresentation: OperatorRepresentation) -> Tuple[NetworkContext, Dict, List[str]]:
+                       operatorRepresentation: OperatorRepresentation) -> Tuple[NetworkContext, Dict, List[str]]:
 
         data_in = ctxt.lookup(operatorRepresentation['data_in'])
         data_out = ctxt.lookup(operatorRepresentation['data_out'])
