@@ -69,7 +69,12 @@ void Conv2d_s8_s8_s32_NCHW(int8_t const *__restrict__ pSrcA, uint32_t C,
           // printf("\r\n");
         }
         // printf("= %-6ld\r\n", sum);
-        pDstC[f * H_out * W_out + h * W_out + w] = sum + bias[f] + output_offset;
+        if (bias != NULL) {
+          pDstC[f * H_out * W_out + h * W_out + w] =
+              sum + bias[f] + output_offset;
+        } else {
+          pDstC[f * H_out * W_out + h * W_out + w] = sum + output_offset;
+        }
       }
     }
   }
