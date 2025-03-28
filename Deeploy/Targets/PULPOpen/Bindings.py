@@ -50,9 +50,10 @@ from Deeploy.Targets.PULPOpen.CodeTransformationPasses.PULPL3Tiling import PULPL
 from Deeploy.Targets.PULPOpen.CodeTransformationPasses.PULPProfileUntiled import PULPProfileUntiled
 from Deeploy.Targets.PULPOpen.DataTypes import PULPDMAFuture
 from Deeploy.Targets.PULPOpen.Templates import ConvTemplate, FloatConvTemplate, FloatMaxPoolTemplate, \
-    FloatSoftmaxTemplate, GEMMTemplate, MatrixVectorTemplate, MaxPool2DTemplate, MulTemplate, ReduceMeanTemplate, \
-    RequantShiftTemplate, RQAddTemplate, RQSiHardswishTemplate, SliceTemplate, SoftmaxCrossEntropyLossTemplate, \
-    TallGEMMTemplate, TransposeTemplate, UniformRequantShiftTemplate, iRMSNormTemplate, iSoftmaxTemplate
+    FloatSoftmaxTemplate, GEMMTemplate, IntConvTemplate, MatrixVectorTemplate, MaxPool2DTemplate, MulTemplate, \
+    ReduceMeanTemplate, RequantShiftTemplate, RQAddTemplate, RQSiHardswishTemplate, SliceTemplate, \
+    SoftmaxCrossEntropyLossTemplate, TallGEMMTemplate, TransposeTemplate, UniformRequantShiftTemplate, \
+    iRMSNormTemplate, iSoftmaxTemplate
 from Deeploy.Targets.PULPOpen.TypeCheckers import PULPConvChecker, PULPLinearChecker, PULPMaxPoolChecker, \
     PULPRequantShiftChecker
 from Deeploy.TilingExtension.CodeTransformationPasses.TilingVariableReplacement import TilingVariableReplacement
@@ -402,4 +403,11 @@ BasicDequantBindings = [
 ] + [
     NodeBinding(DequantChecker([PointerClass(int32_t)], [PointerClass(float32_t)]), DequantTemplate.referenceTemplate,
                 ForkTransformer),
+]
+
+PULPDequantConv2DBindings = [
+    NodeBinding(
+        ConvChecker([PointerClass(int8_t), PointerClass(int8_t),
+                     PointerClass(int32_t)], [PointerClass(int32_t)]), IntConvTemplate.reference2DTemplate,
+        ForkTransformer)
 ]
