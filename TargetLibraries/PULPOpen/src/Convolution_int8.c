@@ -37,64 +37,48 @@ void Conv2d_s8_s8_s32_HWC(
     int32_t output_offset, const int32_t *__restrict__ bias, uint32_t pad_top,
     uint32_t pad_bottom, uint32_t pad_left, uint32_t pad_right)
 {
-
   const uint32_t H_out = (H + pad_top + pad_bottom - P) / SP + 1;
   const uint32_t W_out = (W + pad_left + pad_right - Q) / SQ + 1;
-
-  /*
-   * FBRANCASI: This dummy variable and its modification
-   * inside the loop prevent aggressive optimizations
-   * by the compiler that can cause a heisenbug.
-   */
-  uint32_t dummy = 0;
 
   for (uint32_t f_idx = 0; f_idx < F; f_idx++)
   {
     const int32_t bias_val = (bias != NULL) ? bias[f_idx] : 0;
 
-    for (uint32_t h_idx = 0; h_idx < H_out; h_idx++)
+    for (uint32_t h_out = 0; h_out < H_out; h_out++)
     {
-      for (uint32_t w_idx = 0; w_idx < W_out; w_idx++)
+      for (uint32_t w_out = 0; w_out < W_out; w_out++)
       {
-        int32_t result = bias_val;
+        int32_t output_value = bias_val;
 
-        for (uint32_t p_idx = 0; p_idx < P; p_idx++)
+        const uint32_t out_idx = (h_out * W_out + w_out) * F + f_idx;
+
+        for (uint32_t kernel_pos = 0; kernel_pos < P * Q; kernel_pos++)
         {
-          int32_t h_in = h_idx * SP + p_idx - pad_top;
+          const uint32_t p_idx = kernel_pos / Q;
+          const uint32_t q_idx = kernel_pos % Q;
 
-          if (h_in < 0 || h_in >= (int32_t)H)
+          const int32_t h_in = h_out * SP + p_idx - pad_top;
+          const int32_t w_in = w_out * SQ + q_idx - pad_left;
+
+          if (h_in < 0 || h_in >= (int32_t)H ||
+              w_in < 0 || w_in >= (int32_t)W)
           {
             continue;
           }
 
-          for (uint32_t q_idx = 0; q_idx < Q; q_idx++)
+          const uint32_t in_base = (h_in * W + w_in) * C;
+
+          const uint32_t weight_base = (f_idx * P * Q + p_idx * Q + q_idx) * C;
+
+          for (uint32_t c_idx = 0; c_idx < C; c_idx++)
           {
-            int32_t w_in = w_idx * SQ + q_idx - pad_left;
-
-            if (w_in < 0 || w_in >= (int32_t)W)
-            {
-              continue;
-            }
-
-            dummy = dummy + 1;
-
-            for (uint32_t c_idx = 0; c_idx < C; c_idx++)
-            {
-              uint32_t input_idx = (h_in * W + w_in) * C + c_idx;
-              uint32_t weight_idx = (f_idx * P * Q * C) + (p_idx * Q * C) + (q_idx * C) + c_idx;
-
-              int8_t input_val = pSrcA[input_idx];
-              int8_t weight_val = pSrcB[weight_idx];
-
-              result += ((int32_t)input_val + input_offset) * (int32_t)weight_val;
-            }
+            const int8_t input_val = pSrcA[in_base + c_idx];
+            const int8_t weight_val = pSrcB[weight_base + c_idx];
+            output_value += ((int32_t)input_val + input_offset) * (int32_t)weight_val;
           }
         }
 
-        result += output_offset;
-
-        uint32_t output_idx = (h_idx * W_out + w_idx) * F + f_idx;
-        pDstC[output_idx] = result;
+        pDstC[out_idx] = output_value + output_offset;
       }
     }
   }
