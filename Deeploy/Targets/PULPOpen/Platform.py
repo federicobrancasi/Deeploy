@@ -128,7 +128,7 @@ PULPMapping = {
     'Conv': ConvLayer([Conv2DDequantMapper, FPConv2DMapper]),
     'RequantizedConv': PULPRQSConvLayer([Conv2DMapper, DWConv2DMapper, Conv1DMapper, DWConv1DMapper]),
     'RequantizedGemm': PULPRQSGEMMLayer([MatrixVecMapper, TallGEMMMapper, GEMMMapper]),
-    'Gemm': GEMMLayer([GEMMDequantMapper, FloatGEMMMapper]),
+    'Gemm': GEMMLayer([FloatGEMMMapper, GEMMDequantMapper]),
     'Gelu': GELULayer([GELUMapper]),
     'LayerNormalization': LayerNormLayer([LayerNormMapper]),
     'MaxPool': MaxPoolLayer([MaxPool2DMapper]),
