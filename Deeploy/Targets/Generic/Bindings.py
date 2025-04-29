@@ -41,8 +41,8 @@ from Deeploy.Targets.Generic.Templates import AddTemplate, ConcatTemplate, ConvT
     IntegerDivTemplate, ITAMaxTemplate, ITAPartialMaxTemplate, MatMulTemplate, MaxPoolTemplate, MulTemplate, \
     PadTemplate, QuantTemplate, ReduceMeanTemplate, ReduceSumTemplate, RequantShiftTemplate, ReshapeTemplate, \
     RQIntegerDivTemplate, RQSiGELUTemplate, SliceTemplate, TransposeTemplate, iGELUTemplate, iLayernormTemplate, \
-    iRMSNormTemplate, iSoftmaxTemplate
-from Deeploy.Targets.Generic.TypeCheckers import AddChecker, ConcatChecker, ConvChecker, DebugPrintChecker, \
+    AveragePoolTemplate, iRMSNormTemplate, iSoftmaxTemplate
+from Deeploy.Targets.Generic.TypeCheckers import AddChecker, AveragePoolChecker, ConcatChecker, ConvChecker, DebugPrintChecker, \
     DequantChecker, DivChecker, DummyChecker, GatherChecker, GELUChecker, GEMMChecker, LayerNormChecker, \
     MatMulChecker, MaxPoolChecker, MulChecker, PadChecker, QuantChecker, ReduceMeanChecker, ReduceSumChecker, \
     ReluChecker, RequantShiftChecker, ReshapeChecker, RQIntegerDivChecker, SliceChecker, SoftmaxChecker, \
@@ -275,4 +275,14 @@ BasicDequantBindings = [
 ] + [
     NodeBinding(DequantChecker([PointerClass(int32_t)], [PointerClass(float32_t)]), DequantTemplate.referenceTemplate,
                 BasicTransformer),
+]
+
+BasicAveragePool2DBindings = [
+    NodeBinding(AveragePoolChecker([PointerClass(int8_t)], [PointerClass(int8_t)]), 
+                AveragePoolTemplate.referenceTemplate,
+                BasicTransformer)
+] + [
+    NodeBinding(AveragePoolChecker([PointerClass(float32_t)], [PointerClass(float32_t)]),
+                AveragePoolTemplate.floatReferenceTemplate,
+                BasicTransformer)
 ]

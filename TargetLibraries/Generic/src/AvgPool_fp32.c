@@ -1,0 +1,71 @@
+/* =====================================================================
+ * Title:        AvgPool_fp32.c
+ * Description:
+ *
+ * Date:         29.04.2023
+ *
+ * ===================================================================== */
+
+/*
+ * Copyright (C) 2023 ETH Zurich and University of Bologna.
+ *
+ * Authors:
+ * - Federico Brancasi, ETH Zurich
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the License); you may
+ * not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+#include "DeeployBasicMath.h"
+
+void AvgPool2d_fp32_fp32_NCHW(float32_t const *__restrict__ pSrcA, uint32_t C,
+                              uint32_t H, uint32_t W,
+                              uint32_t P, uint32_t Q, uint32_t SP, uint32_t SQ, uint32_t pool_size,
+                              float32_t *__restrict__ pDstC)
+{
+  uint32_t H_out = (H - P) / SP + 1;
+  uint32_t W_out = (W - Q) / SQ + 1;
+
+  uint32_t c = 0;
+  uint32_t h = 0;
+  uint32_t w = 0;
+  uint32_t p = 0;
+  uint32_t q = 0;
+
+  float32_t sum;
+  float32_t avg;
+
+  for (c = 0; c < C; ++c)
+  {
+    for (h = 0; h < H_out; ++h)
+    {
+      for (w = 0; w < W_out; ++w)
+      {
+        sum = 0.0f;
+
+        for (p = 0; p < P; ++p)
+        {
+          for (q = 0; q < Q; ++q)
+          {
+            sum += pSrcA[c * H * W + (h * SP + p) * W + (w * SQ + q)];
+          }
+        }
+
+        avg = sum / pool_size;
+
+        pDstC[c * H_out * W_out + h * W_out + w] = avg;
+      }
+    }
+  }
+}
