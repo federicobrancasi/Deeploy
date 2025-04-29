@@ -2140,7 +2140,6 @@ class GenericConv2DParser(Conv2DParser):
 
         if ret:
             inputs = ['data_in', 'weight', 'bias']
-            # inputs = ['data_in', 'weight']
             for idx, inputNode in enumerate(node.inputs):
                 print("Index: ", idx, "node: ", inputNode)
                 self.operatorRepresentation[inputs[idx]] = ctxt.lookup(inputNode.name).name

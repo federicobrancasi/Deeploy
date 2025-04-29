@@ -50,10 +50,11 @@ from Deeploy.Targets.Generic.TopologyOptimizationPasses.Passes import DequantPat
     MergeConstAddAndRequantPass, MergeTrueIntegerDivRequantShiftPass, QuantPatternPass, RQSSplitPass, \
     SkipEmptyConcatPass, SkipUnityRequantPass, iGELURequantMergePass, iHardswishRequantMergePass
 from Deeploy.Targets.PULPOpen.Bindings import BasicDequantBindings, BasicQuantBindings, PULPConv1DBinding, \
-    PULPDMASliceBindings, PULPDWConv1DBinding, PULPReduceMeanBindings
+    PULPDequantConv2DBindings, PULPDMASliceBindings, PULPDWConv1DBinding, PULPReduceMeanBindings
 from Deeploy.Targets.PULPOpen.Layers import PULPRQSConvLayer, PULPRQSGEMMLayer
-from Deeploy.Targets.PULPOpen.Parsers import PULPConv1DParser, PULPConv2DParser, PULPDWConv1DParser, \
-    PULPDWConv2DParser, PULPFPConv2DParser, PULPGEMMParser, PULPMatrixVecParser, PULPTallGEMMParser
+from Deeploy.Targets.PULPOpen.Parsers import PULPConv1DParser, PULPConv2DParser, PULPDequantConv2DParser, \
+    PULPDWConv1DParser, PULPDWConv2DParser, PULPFPConv2DParser, PULPGEMMParser, PULPMatrixVecParser, \
+    PULPTallGEMMParser
 from Deeploy.Targets.PULPOpen.Templates import AllocateTemplate, FreeTemplate
 from Deeploy.Targets.PULPOpen.Tiler import PULPAddTilingReadyBindings, PULPConcatTilingReadyBindings, \
     PULPConv2DTilingReadyBindings, PULPFlattenTilingReadyBindings, PULPFPGELUTilingReadyBindings, \
@@ -120,9 +121,12 @@ SoftmaxCrossEntropyLossGradMapper = NodeMapper(SoftmaxCrossEntropyLossGradParser
 SGDMapper = NodeMapper(SGDParser(), PULPSGDTilingReadyBindings)
 QuantMapper = NodeMapper(QuantParser(), BasicQuantBindings)
 DequantMapper = NodeMapper(DequantParser(), BasicDequantBindings)
-GEMMDequantMapper = NodeMapper(PULPGEMMParser(), BasicGEMMBindings)
+
+GEMMDequantMapper = NodeMapper(GEMMParser(), BasicGEMMBindings)
+Conv2DDequantMapper = NodeMapper(PULPDequantConv2DParser(), PULPDequantConv2DBindings)
+
 PULPMapping = {
-    'Conv': ConvLayer([FPConv2DMapper]),
+    'Conv': ConvLayer([Conv2DDequantMapper, FPConv2DMapper]),
     'RequantizedConv': PULPRQSConvLayer([Conv2DMapper, DWConv2DMapper, Conv1DMapper, DWConv1DMapper]),
     'RequantizedGemm': PULPRQSGEMMLayer([MatrixVecMapper, TallGEMMMapper, GEMMMapper]),
     'Gemm': GEMMLayer([FloatGEMMMapper, GEMMDequantMapper]),
@@ -248,6 +252,7 @@ PULPOptimizer = TopologyOptimizer([
     MergeConstAddAndRequantPass(),
     PULPGEMMRequantMergePass(),
     PULPMatMulRequantMergePass(),
+    # ExtractPaddingFromConvPass(),
     PULPAddRequantMergePass()
 ])
 
