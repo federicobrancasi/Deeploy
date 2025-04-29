@@ -1198,3 +1198,74 @@ class DequantPatternPass(ReplaceSequentialPatternPass):
 
         name = "_RECOGNIZE_DEQUANT_PASS"
         super().__init__(graph, _recognize_dequant_fun, name)
+
+
+def _extract_padding_fun_avgpool(graph: gs.Graph, match: Match, name: str, value = 0):
+    matched_nodes = [m for k, m in match.nodes_map.items()]
+    pool = matched_nodes[0]
+
+    print("Processing AveragePool node:", pool.name)
+    print("Attributes:", pool.attrs)
+    
+    if 'pads' in pool.attrs and np.sum(pool.attrs['pads']) > 0:
+        pads = copy.deepcopy(pool.attrs['pads'])
+        shape = copy.deepcopy(pool.inputs[0].shape)
+        newPads = np.zeros(2 * len(shape))
+
+        print("AveragePool pads:", pads)
+        print("Input shape:", shape)
+
+        if len(shape) - 2 != len(pads) / 2:
+            print(f"WARNING: AveragePool padding dims do not match! Shape: {shape}, Pads: {pads}")
+            return graph
+
+        newShape = shape.copy()
+        beginPads = pads[:len(pads) // 2]
+        endPads = pads[len(pads) // 2:]
+
+        for idx, i in enumerate(beginPads):
+            newShape[2 + idx] += i
+            newPads[2 + idx] = i
+
+        for idx, i in enumerate(endPads):
+            newShape[2 + idx] += i
+            newPads[len(newPads) // 2 + 2 + idx] = i
+
+        print("New shape after padding:", newShape)
+        print("New pads:", newPads)
+
+        newPoolInput = gs.Variable(name + '_padded_input', dtype = np.float32, shape = newShape)
+        pool.attrs['pads'] = [0 for _ in pool.attrs['pads']]
+
+        # For average pool, we should use 0 as the padding value
+        padding_value = 0
+
+        newPad = gs.Node(op = 'Pad',
+                        name = name + '_pad',
+                        attrs = {
+                            'pads': newPads,
+                            'mode': 'constant',
+                            'value': padding_value
+                        },
+                        inputs = [pool.inputs[0]],
+                        outputs = [newPoolInput])
+
+        pool.inputs[0] = newPoolInput
+        graph.nodes.append(newPad)
+        graph.cleanup().toposort()
+
+    return graph
+
+@contextagnostic
+class ExtractPaddingFromAveragePoolPass(ReplaceSequentialPatternPass):
+
+    def __init__(self):
+        graph = gs.Graph()
+        _input = gs.Variable(name = 'input_1')
+        output = graph.layer(inputs = [_input], outputs = ['pool_out'], op = 'AveragePool', name = 'avgpool1')
+        graph.outputs.append(output)
+        graph.inputs = [_input]
+
+        name = "_EXTRACT_AVGPOOL_PASS"
+
+        super().__init__(graph, _extract_padding_fun_avgpool, name)

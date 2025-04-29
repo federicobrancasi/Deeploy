@@ -30,6 +30,25 @@ from Deeploy.CommonExtensions.OptimizationPasses.TopologyOptimizationPasses.Lowe
     RemoveEmptyConvBiasPass
 from Deeploy.DeeployTypes import ConstantBuffer, DeploymentEngine, DeploymentPlatform, NodeMapper, NodeTemplate, \
     StructBuffer, TopologyOptimizer, TransientBuffer, VariableBuffer
+from Deeploy.Targets.Generic.Bindings import BasicAddBindings, BasicConv1DBinding, BasicConv2DBindings, \
+    BasicDebugPrintBindings, BasicDequantBindings, BasicDivBindings, BasicDWConv1DBinding, BasicDWConv2DBindings, \
+    BasicGatherBindings, BasicGELUBindings, BasicGEMMBindings, BasicITAPartialSoftmaxBinding, BasicITASoftmaxBinding, \
+    BasicLayerNormBindings, BasicMatMulBindings, BasicMaxPool2DBindings, BasicMulBindings, BasicPad1DBindings, \
+    BasicPad2DBindings, BasicQuantBindings, BasicReduceMeanBindings, BasicReduceSumBindings, BasicReluBinding, \
+    BasicReshapeBindings, BasicRQIntegerDivBinding, BasicRQSBindings, BasicRQSGELUBinding, BasicSliceBindings, \
+    BasicSoftmaxBindings, BasicTransposeBindings, DummyBinding, BasicAveragePool2DBindings
+from Deeploy.Targets.Generic.Layers import AddLayer, AveragePoolLayer, ConvLayer, DebugPrintLayer, DequantLayer, DivLayer, GatherLayer, \
+    GELULayer, GEMMLayer, ITAMaxLayer, LayerNormLayer, MatMulLayer, MaxPoolLayer, MulLayer, PadLayer, QuantLayer, \
+    ReduceMeanLayer, ReduceSumLayer, ReluLayer, RequantShiftLayer, ReshapeLayer, RQIntegerDivLayer, RQSiGELULayer, \
+    SliceLayer, SoftmaxLayer, TransposeLayer
+from Deeploy.Targets.Generic.Parsers import AddParser, DebugParser, DequantParser, DivParser, DummyParser, \
+    FlattenParser, GatherParser, GELUParser, GenericConv1DParser, GenericConv2DParser, GenericDWConv1DParser, \
+    GenericDWConv2DParser, GenericGEMMParser, GenericMaxPool2DParser, IntegerDivParser, ITAMaxParser, \
+    ITAPartialMaxParser, LayerNormParser, MatMulParser, MulParser, Pad1DParser, Pad2DParser, QuantParser, \
+    ReduceMeanParser, ReduceSumParser, ReluParser, RequantShiftParser, ReshapeParser, RQIntegerDivParser, \
+    RQSiGELUParser, SliceParser, SoftmaxParser, TransposeParser, UnsqueezeParser, iLayerNormParser, iSoftmaxParser, \
+    GenericAveragePool2DParser
+from Deeploy.Targets.Generic.Templates import AllocateTemplate, FreeTemplate, AveragePoolTemplate
 from Deeploy.Targets.Generic.Bindings import BasicAddBindings, BasicConcatBindings, BasicConv1DBinding, \
     BasicConv2DBindings, BasicDebugPrintBindings, BasicDequantBindings, BasicDivBindings, BasicDWConv1DBinding, \
     BasicDWConv2DBindings, BasicGatherBindings, BasicGELUBindings, BasicGEMMBindings, BasicITAPartialSoftmaxBinding, \
@@ -90,6 +109,8 @@ DequantMapper = NodeMapper(DequantParser(), BasicDequantBindings)
 
 SliceMapper = NodeMapper(SliceParser(), BasicSliceBindings)
 
+AveragePoolMapper = NodeMapper(GenericAveragePool2DParser(), BasicAveragePool2DBindings)
+
 # Dummy nodes are intended for development purposes only!
 # They should always generate compiler errors to not accidentally end up in production code
 DummyMapper = NodeMapper(DummyParser(), [DummyBinding])
@@ -129,8 +150,9 @@ GenericMapping = {
     'Transpose': TransposeLayer([TransposeMapper]),
     'Unsqueeze': ReshapeLayer([UnsqueezeMapper]),
     'Slice': SliceLayer([SliceMapper]),
+    'AveragePool': AveragePoolLayer([AveragePoolMapper]),
     'Quant': QuantLayer([QuantMapper]),
-    'Dequant': DequantLayer([DequantMapper])
+    'Dequant': DequantLayer([DequantMapper]),
     # # For example, you can use the DummpyMapper, in case you want to test
     # # deployment or optimizations with GlobalAveragePool nodes but did not yet
     # # implement the corresponding kernel
