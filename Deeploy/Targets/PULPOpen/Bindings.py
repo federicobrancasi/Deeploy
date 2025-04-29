@@ -50,9 +50,9 @@ from Deeploy.Targets.PULPOpen.CodeTransformationPasses.PULPProfileUntiled import
 from Deeploy.Targets.PULPOpen.DataTypes import PULPDMAFuture
 from Deeploy.Targets.PULPOpen.Templates import ConvTemplate, FloatAddTemplate, FloatConvTemplate, FloatGELUTemplate, \
     FloatGemmTemplate, FloatLayernormTemplate, FloatMatMulTemplate, FloatMaxPoolTemplate, FloatMulTemplate, \
-    FloatReluTemplate, FloatSoftmaxTemplate, GEMMTemplate, MatrixVectorTemplate, MaxPool2DTemplate, MulTemplate, \
-    ReduceMeanTemplate, RequantShiftTemplate, RQAddTemplate, RQSiHardswishTemplate, SGDTemplate, SliceTemplate, \
-    SoftmaxCrossEntropyLossTemplate, TallGEMMTemplate, TransposeTemplate, UniformRequantShiftTemplate, \
+    FloatReluTemplate, FloatSoftmaxTemplate, GEMMTemplate, IntConvTemplate, MatrixVectorTemplate, MaxPool2DTemplate, \
+    MulTemplate, ReduceMeanTemplate, RequantShiftTemplate, RQAddTemplate, RQSiHardswishTemplate, SGDTemplate, \
+    SliceTemplate, SoftmaxCrossEntropyLossTemplate, TallGEMMTemplate, TransposeTemplate, UniformRequantShiftTemplate, \
     iRMSNormTemplate, iSoftmaxTemplate
 from Deeploy.Targets.PULPOpen.TypeCheckers import PULPConvChecker, PULPLinearChecker, PULPMaxPoolChecker, \
     PULPRequantShiftChecker
@@ -347,6 +347,81 @@ PULPTransposeBindings = [
 PULPConcatBindings = [
     NodeBinding(ConcatChecker([PointerClass(type), PointerClass(type)], [PointerClass(type)]),
                 ConcatTemplate.referenceTemplate, ClusterTransformer) for type in IntegerDataTypes
+]
+
+PULPiRMSNormBindings = [
+    NodeBinding(LayerNormChecker([PointerClass(int8_t), PointerClass(int32_t)], [PointerClass(int8_t)]),
+                iRMSNormTemplate.referenceTemplate, ForkTransformer)
+]
+
+PULPiHardswishBindings = [
+    NodeBinding(HardswishChecker([PointerClass(int8_t)], [PointerClass(int32_t)]), iHardswishTemplate.referenceTemplate,
+                ClusterTransformer)
+]
+PULPRQSiHardswishBindings = [
+    NodeBinding(
+        RQHardswishChecker([PointerClass(int8_t),
+                            PointerClass(int32_t),
+                            PointerClass(int32_t),
+                            PointerClass(int32_t)], [PointerClass(int8_t)]), RQSiHardswishTemplate.referenceTemplate,
+        ForkTransformer)
+]
+
+PULPiRQSGELUBindings = [
+    NodeBinding(
+        GELUChecker([PointerClass(int8_t),
+                     PointerClass(int32_t),
+                     PointerClass(int32_t),
+                     PointerClass(int32_t)], [PointerClass(int8_t)]), RQSiGELUTemplate.referenceTemplate,
+        ClusterTransformer)
+]
+
+PULPMulBindings = [
+    NodeBinding(MulChecker([PointerClass(typeA), PointerClass(typeB)], [PointerClass(int32_t)]),
+                MulTemplate.referenceTemplate, ForkTransformer)
+    for typeA, typeB in itertools.product(SignedIntegerDataTypes, SignedIntegerDataTypes)
+] + [
+    NodeBinding(MulChecker([PointerClass(float32_t), PointerClass(float32_t)], [PointerClass(float32_t)]),
+                FloatMulTemplate.referenceTemplate, ForkTransformer)
+]
+
+PULPReluBinding = NodeBinding(ReluChecker([PointerClass(float32_t)], [PointerClass(float32_t)]),
+                              FloatReluTemplate.referenceTemplate, ForkTransformer)
+
+PULPLayernormBinding = NodeBinding(
+    LayerNormChecker(
+        [PointerClass(float32_t), PointerClass(float32_t),
+         PointerClass(float32_t)], [PointerClass(float32_t)]), FloatLayernormTemplate.referenceTemplate,
+    ForkTransformer)
+
+PULPFloatGELUBinding = NodeBinding(
+    GELUChecker([PointerClass(float32_t), PointerClass(float32_t)], [PointerClass(float32_t)]),
+    FloatGELUTemplate.referenceTemplate, ForkTransformer)
+
+PULPGatherBindings = [
+    NodeBinding(GatherChecker([PointerClass(float32_t), PointerClass(type)], [PointerClass(float32_t)]),
+                GatherTemplate.referenceTemplate, ForkTransformer) for type in IntegerDataTypes
+]
+
+BasicQuantBindings = [
+    NodeBinding(QuantChecker([PointerClass(float32_t)], [PointerClass(int8_t)]), QuantTemplate.referenceTemplate,
+                ForkTransformer),
+]
+
+BasicDequantBindings = [
+    NodeBinding(DequantChecker([PointerClass(int8_t)], [PointerClass(float32_t)]), DequantTemplate.referenceTemplate,
+                ForkTransformer),
+] + [
+    NodeBinding(DequantChecker([PointerClass(int32_t)], [PointerClass(float32_t)]), DequantTemplate.referenceTemplate,
+                ForkTransformer),
+]
+
+PULPDequantConv2DBindings = [
+    NodeBinding(
+        ConvChecker([PointerClass(int8_t), PointerClass(int8_t),
+                     PointerClass(int32_t)], [PointerClass(int32_t)]), IntConvTemplate.reference2DTemplate,
+        ForkTransformer)
+]                ConcatTemplate.referenceTemplate, ClusterTransformer) for type in IntegerDataTypes
 ]
 
 PULPiRMSNormBindings = [
