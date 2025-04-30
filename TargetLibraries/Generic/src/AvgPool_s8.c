@@ -1,5 +1,5 @@
 /* =====================================================================
- * Title:        AvgPool_s8.h
+ * Title:        AvgPool_s8.c
  * Description:
  *
  * Date:         29.04.2023
@@ -38,40 +38,38 @@ void AvgPool2d_s8_s8_NCHW(int8_t const *__restrict__ pSrcA, uint32_t C,
   uint32_t H_out = (H - P) / SP + 1;
   uint32_t W_out = (W - Q) / SQ + 1;
 
-  uint32_t c = 0;
-  uint32_t h = 0;
-  uint32_t w = 0;
-  uint32_t p = 0;
-  uint32_t q = 0;
-
-  int32_t sum;
-  int32_t avg;
-
-  for (c = 0; c < C; ++c)
+  for (uint32_t c = 0; c < C; ++c)
   {
-    for (h = 0; h < H_out; ++h)
+    for (uint32_t h_out = 0; h_out < H_out; ++h_out)
     {
-      for (w = 0; w < W_out; ++w)
+      for (uint32_t w_out = 0; w_out < W_out; ++w_out)
       {
-        sum = 0;
+        int32_t sum = 0;
 
-        for (p = 0; p < P; ++p)
+        for (uint32_t p = 0; p < P; ++p)
         {
-          for (q = 0; q < Q; ++q)
+          for (uint32_t q = 0; q < Q; ++q)
           {
-            sum += (pSrcA[c * H * W + (h * SP + p) * W + (w * SQ + q)] + input_offset);
+            uint32_t h_in = h_out * SP + p;
+            uint32_t w_in = w_out * SQ + q;
+            if (h_in < H && w_in < W)
+            {
+              sum += (pSrcA[c * H * W + h_in * W + w_in] + input_offset);
+            }
           }
         }
 
-        avg = (sum + pool_size / 2) / pool_size;
-        avg = avg - output_offset;
+        // Divide by the fixed pool size (P*Q) and apply output offset
+        // Use rounding division for better accuracy with integers
+        int32_t avg = (sum + pool_size / 2) / pool_size - output_offset;
 
+        // Clamp
         if (avg > 127)
           avg = 127;
         if (avg < -128)
           avg = -128;
 
-        pDstC[c * H_out * W_out + h * W_out + w] = (int8_t)avg;
+        pDstC[c * H_out * W_out + h_out * W_out + w_out] = (int8_t)avg;
       }
     }
   }

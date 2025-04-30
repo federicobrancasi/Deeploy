@@ -1206,9 +1206,6 @@ class DequantPatternPass(ReplaceSequentialPatternPass):
 def _extract_padding_fun_avgpool(graph: gs.Graph, match: Match, name: str, value = 0):
     matched_nodes = [m for k, m in match.nodes_map.items()]
     pool = matched_nodes[0]
-
-    print("Processing AveragePool node:", pool.name)
-    print("Attributes:", pool.attrs)
     
     if 'pads' in pool.attrs and np.sum(pool.attrs['pads']) > 0:
         pads = copy.deepcopy(pool.attrs['pads'])

@@ -46,7 +46,7 @@ from Deeploy.Targets.Generic.Parsers import AddParser, DebugParser, DequantParse
     RQSiGELUParser, SliceParser, SoftmaxParser, TransposeParser, UnsqueezeParser, iLayerNormParser, iSoftmaxParser, \
     GenericAveragePool2DParser
 from Deeploy.Targets.Generic.Templates import AllocateTemplate, FreeTemplate, AveragePoolTemplate
-from Deeploy.Targets.Generic.TopologyOptimizationPasses.Passes import DequantPatternPass, ExtractPaddingFromConvPass, \
+from Deeploy.Targets.Generic.TopologyOptimizationPasses.Passes import DequantPatternPass, ExtractPaddingFromAveragePoolPass, ExtractPaddingFromConvPass, \
     ExtractPaddingFromPoolPass, MatMulAddMergePass, MergeConstAddAndRequantPass, QuantPatternPass, \
     iGELURequantMergePass
 
@@ -173,6 +173,7 @@ GenericOptimizer = TopologyOptimizer([
     MergeConstAddAndRequantPass(),
     ExtractPaddingFromConvPass(),
     ExtractPaddingFromPoolPass(),
+    ExtractPaddingFromAveragePoolPass(),
     # DebugPrintPass(r'.*[Mm]at[Mm]ul.*', position = 'after'),
 ])
 
