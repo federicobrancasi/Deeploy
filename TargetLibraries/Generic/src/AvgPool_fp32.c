@@ -37,34 +37,30 @@ void AvgPool2d_fp32_fp32_NCHW(float32_t const *__restrict__ pSrcA, uint32_t C,
   uint32_t H_out = (H - P) / SP + 1;
   uint32_t W_out = (W - Q) / SQ + 1;
 
-  uint32_t c = 0;
-  uint32_t h = 0;
-  uint32_t w = 0;
-  uint32_t p = 0;
-  uint32_t q = 0;
-
-  float32_t sum;
-  float32_t avg;
-
-  for (c = 0; c < C; ++c)
+  for (uint32_t c = 0; c < C; ++c)
   {
-    for (h = 0; h < H_out; ++h)
+    for (uint32_t h_out = 0; h_out < H_out; ++h_out)
     {
-      for (w = 0; w < W_out; ++w)
+      for (uint32_t w_out = 0; w_out < W_out; ++w_out)
       {
-        sum = 0.0f;
+        float32_t sum = 0.0f;
 
-        for (p = 0; p < P; ++p)
+        for (uint32_t p = 0; p < P; ++p)
         {
-          for (q = 0; q < Q; ++q)
+          for (uint32_t q = 0; q < Q; ++q)
           {
-            sum += pSrcA[c * H * W + (h * SP + p) * W + (w * SQ + q)];
+            uint32_t h_in = h_out * SP + p;
+            uint32_t w_in = w_out * SQ + q;
+
+            if (h_in < H && w_in < W)
+            {
+              sum += pSrcA[c * H * W + h_in * W + w_in];
+            }
           }
         }
 
-        avg = sum / pool_size;
-
-        pDstC[c * H_out * W_out + h * W_out + w] = avg;
+        // Use the fixed kernel size as divisor, this should match PyTorch's behavior :)
+        pDstC[c * H_out * W_out + h_out * W_out + w_out] = sum / pool_size;
       }
     }
   }
