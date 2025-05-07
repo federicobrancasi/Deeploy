@@ -70,5 +70,7 @@
 #include "kernel/RQHardswish.h"
 #include "kernel/RequantShift.h"
 #include "kernel/Softmax.h"
+#include "kernel/BatchNorm.h"
+#include "kernel/AvgPool.h"
 
 #endif //__DEEPLOY_BASIC_MATH_HEADER_

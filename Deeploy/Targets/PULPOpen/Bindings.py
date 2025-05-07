@@ -421,8 +421,7 @@ PULPDequantConv2DBindings = [
         ConvChecker([PointerClass(int8_t), PointerClass(int8_t),
                      PointerClass(int32_t)], [PointerClass(int32_t)]), IntConvTemplate.reference2DTemplate,
         ForkTransformer)
-]                ConcatTemplate.referenceTemplate, ClusterTransformer) for type in IntegerDataTypes
-]
+]            
 
 PULPiRMSNormBindings = [
     NodeBinding(LayerNormChecker([PointerClass(int8_t), PointerClass(int32_t)], [PointerClass(int8_t)]),

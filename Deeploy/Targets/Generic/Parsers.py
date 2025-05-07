@@ -2535,33 +2535,29 @@ class GenericAveragePool2DParser(NodeParser):
 
     def parseNode(self, node: gs.Node) -> bool:
         
-        # Check required attributes
         required_attrs = ['kernel_shape', 'pads', 'strides']
         for attr in required_attrs:
             if attr not in node.attrs:
                 print(f"Missing required attribute: {attr}")
                 return False
         
-        # Check inputs/outputs
         if len(node.inputs) < 1 or len(node.outputs) < 1:
-            print("Not enough inputs or outputs")
+            print("Not enough inputs/outputs")
             return False
             
-        # Check dimensions
         pads = node.attrs['pads']
         kernel_shape = node.attrs['kernel_shape']
         strides = node.attrs['strides']
         
         if len(pads) != 4 or len(kernel_shape) != 2 or len(strides) != 2:
-            print(f"Invalid dimensions: pads={pads}, kernel_shape={kernel_shape}, strides={strides}")
+            print(f"Invalid dimensions!")
+            print(f"pads={pads}, kernel_shape={kernel_shape}, strides={strides}")
             return False
             
-        # Store attributes in operatorRepresentation
         self.operatorRepresentation['kernel_shape'] = kernel_shape
         self.operatorRepresentation['pads'] = pads
         self.operatorRepresentation['strides'] = strides
         
-        # Store derived attributes
         self.operatorRepresentation['padding_x'] = int(pads[0])
         self.operatorRepresentation['padding_y'] = int(pads[1])
         self.operatorRepresentation['padding_x_left'] = int(pads[0])
@@ -2573,7 +2569,6 @@ class GenericAveragePool2DParser(NodeParser):
         self.operatorRepresentation['dim_kernel_x'] = int(kernel_shape[0])
         self.operatorRepresentation['dim_kernel_y'] = int(kernel_shape[1])
         
-        # Optional attributes
         if 'ceil_mode' in node.attrs:
             self.operatorRepresentation['ceil_mode'] = node.attrs['ceil_mode']
         else:
@@ -2587,41 +2582,101 @@ class GenericAveragePool2DParser(NodeParser):
         return True
 
     def parseNodeCtxt(self, ctxt: NetworkContext, node: gs.Node, channels_first: bool = True) -> Tuple[NetworkContext, bool]:
-        try:
-            
-            # Get input and output tensors
-            data_in = ctxt.lookup(node.inputs[0].name)
-            data_out = ctxt.lookup(node.outputs[0].name)
-            
-            # Store basic info
-            self.operatorRepresentation['data_in'] = data_in.name
-            self.operatorRepresentation['data_out'] = data_out.name
-            self.operatorRepresentation['data_in_size'] = np.prod(data_in.shape)
-            self.operatorRepresentation['data_out_size'] = np.prod(data_out.shape)
-            
-            # Check shape validity
-            if len(data_in.shape) != 4 or len(data_out.shape) != 4:
-                print(f"Invalid shapes: data_in={data_in.shape}, data_out={data_out.shape}")
-                return ctxt, False
-                
-            # Store shape info
-            self.operatorRepresentation['batch'] = data_in.shape[0]
-            if channels_first:
-                self.operatorRepresentation['ch_im_in'] = data_in.shape[1]
-                self.operatorRepresentation['dim_im_in_x'] = data_in.shape[2]
-                self.operatorRepresentation['dim_im_in_y'] = data_in.shape[3]
-                self.operatorRepresentation['ch_im_out'] = data_out.shape[1]
-                self.operatorRepresentation['dim_im_out_x'] = data_out.shape[2]
-                self.operatorRepresentation['dim_im_out_y'] = data_out.shape[3]
-            else:
-                self.operatorRepresentation['ch_im_in'] = data_in.shape[3]
-                self.operatorRepresentation['dim_im_in_x'] = data_in.shape[1]
-                self.operatorRepresentation['dim_im_in_y'] = data_in.shape[2]
-                self.operatorRepresentation['ch_im_out'] = data_out.shape[3]
-                self.operatorRepresentation['dim_im_out_x'] = data_out.shape[1]
-                self.operatorRepresentation['dim_im_out_y'] = data_out.shape[2]
-                
-            return ctxt, True
-        except Exception as e:
-            print(f"Error in GenericAveragePool2DParser.parseNodeCtxt: {e}")
+        data_in = ctxt.lookup(node.inputs[0].name)
+        data_out = ctxt.lookup(node.outputs[0].name)
+        
+        self.operatorRepresentation['data_in'] = data_in.name
+        self.operatorRepresentation['data_out'] = data_out.name
+        self.operatorRepresentation['data_in_size'] = np.prod(data_in.shape)
+        self.operatorRepresentation['data_out_size'] = np.prod(data_out.shape)
+        
+        if len(data_in.shape) != 4 or len(data_out.shape) != 4:
+            print(f"Invalid shapes: data_in={data_in.shape}, data_out={data_out.shape}")
             return ctxt, False
+            
+        self.operatorRepresentation['batch'] = data_in.shape[0]
+        if channels_first:
+            self.operatorRepresentation['ch_im_in'] = data_in.shape[1]
+            self.operatorRepresentation['dim_im_in_x'] = data_in.shape[2]
+            self.operatorRepresentation['dim_im_in_y'] = data_in.shape[3]
+            self.operatorRepresentation['ch_im_out'] = data_out.shape[1]
+            self.operatorRepresentation['dim_im_out_x'] = data_out.shape[2]
+            self.operatorRepresentation['dim_im_out_y'] = data_out.shape[3]
+        else:
+            self.operatorRepresentation['ch_im_in'] = data_in.shape[3]
+            self.operatorRepresentation['dim_im_in_x'] = data_in.shape[1]
+            self.operatorRepresentation['dim_im_in_y'] = data_in.shape[2]
+            self.operatorRepresentation['ch_im_out'] = data_out.shape[3]
+            self.operatorRepresentation['dim_im_out_x'] = data_out.shape[1]
+            self.operatorRepresentation['dim_im_out_y'] = data_out.shape[2]
+            
+        return ctxt, True
+        
+
+class GenericBatchNorm2DParser(NodeParser):
+
+    def __init__(self):
+        super().__init__()
+
+    def parseNode(self, node: gs.Node) -> bool:
+        
+        required_attrs = ['epsilon', 'momentum']
+        for attr in required_attrs:
+            if attr not in node.attrs:
+                print(f"Missing required attribute: {attr}")
+                return False
+        
+        if len(node.inputs) < 5 or len(node.outputs) < 1:
+            print("Not enough inputs or outputs")
+            return False
+            
+        self.operatorRepresentation['eps'] = float(node.attrs['epsilon'])
+        self.operatorRepresentation['momentum'] = float(node.attrs['momentum'])
+        
+        if 'training_mode' in node.attrs:
+            self.operatorRepresentation['training_mode'] = bool(node.attrs['training_mode'])
+        else:
+            self.operatorRepresentation['training_mode'] = False
+        
+        return True
+
+    def parseNodeCtxt(self, ctxt: NetworkContext, node: gs.Node, channels_first: bool = True) -> Tuple[NetworkContext, bool]:
+    
+        data_in = ctxt.lookup(node.inputs[0].name)  
+        weight = ctxt.lookup(node.inputs[1].name)  
+        bias = ctxt.lookup(node.inputs[2].name) 
+        running_mean = ctxt.lookup(node.inputs[3].name) 
+        running_var = ctxt.lookup(node.inputs[4].name) 
+        data_out = ctxt.lookup(node.outputs[0].name) 
+        
+        self.operatorRepresentation['data_in'] = data_in.name
+        self.operatorRepresentation['weight'] = weight.name
+        self.operatorRepresentation['bias'] = bias.name
+        self.operatorRepresentation['running_mean'] = running_mean.name
+        self.operatorRepresentation['running_var'] = running_var.name
+        self.operatorRepresentation['data_out'] = data_out.name
+        self.operatorRepresentation['data_in_size'] = np.prod(data_in.shape)
+        self.operatorRepresentation['data_out_size'] = np.prod(data_out.shape)
+        
+        if len(data_in.shape) != 4 or len(data_out.shape) != 4:
+            print(f"Invalid shapes!")
+            print(f"data_in={data_in.shape}, data_out={data_out.shape}")
+            return ctxt, False
+            
+        self.operatorRepresentation['batch'] = data_in.shape[0]
+        if channels_first:
+            self.operatorRepresentation['ch_im_in'] = data_in.shape[1]
+            self.operatorRepresentation['dim_im_in_x'] = data_in.shape[2]
+            self.operatorRepresentation['dim_im_in_y'] = data_in.shape[3]
+            self.operatorRepresentation['ch_im_out'] = data_out.shape[1]
+            self.operatorRepresentation['dim_im_out_x'] = data_out.shape[2]
+            self.operatorRepresentation['dim_im_out_y'] = data_out.shape[3]
+        else:
+            self.operatorRepresentation['ch_im_in'] = data_in.shape[3]
+            self.operatorRepresentation['dim_im_in_x'] = data_in.shape[1]
+            self.operatorRepresentation['dim_im_in_y'] = data_in.shape[2]
+            self.operatorRepresentation['ch_im_out'] = data_out.shape[3]
+            self.operatorRepresentation['dim_im_out_x'] = data_out.shape[1]
+            self.operatorRepresentation['dim_im_out_y'] = data_out.shape[2]
+
+        return ctxt, True

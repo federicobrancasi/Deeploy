@@ -1209,11 +1209,9 @@ def _extract_padding_fun_avgpool(graph: gs.Graph, match: Match, name: str, value
         shape = copy.deepcopy(pool.inputs[0].shape)
         newPads = np.zeros(2 * len(shape))
 
-        print("AveragePool pads:", pads)
-        print("Input shape:", shape)
-
         if len(shape) - 2 != len(pads) / 2:
-            print(f"WARNING: AveragePool padding dims do not match! Shape: {shape}, Pads: {pads}")
+            print(f"AveragePool padding dims do not match! Shape: {shape}, Pads: {pads}")
+            print(f"Shape: {shape}, Pads: {pads}")
             return graph
 
         newShape = shape.copy()
@@ -1228,13 +1226,9 @@ def _extract_padding_fun_avgpool(graph: gs.Graph, match: Match, name: str, value
             newShape[2 + idx] += i
             newPads[len(newPads) // 2 + 2 + idx] = i
 
-        print("New shape after padding:", newShape)
-        print("New pads:", newPads)
-
         newPoolInput = gs.Variable(name + '_padded_input', dtype = np.float32, shape = newShape)
         pool.attrs['pads'] = [0 for _ in pool.attrs['pads']]
 
-        # For average pool, we should use 0 as the padding value
         padding_value = 0
 
         newPad = gs.Node(op = 'Pad',

@@ -36,13 +36,13 @@ from Deeploy.Targets.Generic.Bindings import BasicAddBindings, BasicConv1DBindin
     BasicLayerNormBindings, BasicMatMulBindings, BasicMaxPool2DBindings, BasicMulBindings, BasicPad1DBindings, \
     BasicPad2DBindings, BasicQuantBindings, BasicReduceMeanBindings, BasicReduceSumBindings, BasicReluBinding, \
     BasicReshapeBindings, BasicRQIntegerDivBinding, BasicRQSBindings, BasicRQSGELUBinding, BasicSliceBindings, \
-    BasicSoftmaxBindings, BasicTransposeBindings, DummyBinding, BasicAveragePool2DBindings
+    BasicSoftmaxBindings, BasicTransposeBindings, DummyBinding, BasicAveragePool2DBindings, BasicBatchNorm2DBindings
 from Deeploy.Targets.Generic.Layers import AddLayer, AveragePoolLayer, ConvLayer, DebugPrintLayer, DequantLayer, DivLayer, GatherLayer, \
     GELULayer, GEMMLayer, ITAMaxLayer, LayerNormLayer, MatMulLayer, MaxPoolLayer, MulLayer, PadLayer, QuantLayer, \
     ReduceMeanLayer, ReduceSumLayer, ReluLayer, RequantShiftLayer, ReshapeLayer, RQIntegerDivLayer, RQSiGELULayer, \
-    SliceLayer, SoftmaxLayer, TransposeLayer
+    SliceLayer, SoftmaxLayer, TransposeLayer, BatchNormLayer
 from Deeploy.Targets.Generic.Parsers import AddParser, DebugParser, DequantParser, DivParser, DummyParser, \
-    FlattenParser, GatherParser, GELUParser, GenericConv1DParser, GenericConv2DParser, GenericDWConv1DParser, \
+    FlattenParser, GatherParser, GELUParser, GenericBatchNorm2DParser, GenericConv1DParser, GenericConv2DParser, GenericDWConv1DParser, \
     GenericDWConv2DParser, GenericGEMMParser, GenericMaxPool2DParser, IntegerDivParser, ITAMaxParser, \
     ITAPartialMaxParser, LayerNormParser, MatMulParser, MulParser, Pad1DParser, Pad2DParser, QuantParser, \
     ReduceMeanParser, ReduceSumParser, ReluParser, RequantShiftParser, ReshapeParser, RQIntegerDivParser, \
@@ -106,10 +106,11 @@ TransposeMapper = NodeMapper(TransposeParser(), BasicTransposeBindings)
 UnsqueezeMapper = NodeMapper(UnsqueezeParser(), BasicReshapeBindings)
 QuantMapper = NodeMapper(QuantParser(), BasicQuantBindings)
 DequantMapper = NodeMapper(DequantParser(), BasicDequantBindings)
+AveragePoolMapper = NodeMapper(GenericAveragePool2DParser(), BasicAveragePool2DBindings)
+BatchNormMapper = NodeMapper(GenericBatchNorm2DParser(), BasicBatchNorm2DBindings)
 
 SliceMapper = NodeMapper(SliceParser(), BasicSliceBindings)
 
-AveragePoolMapper = NodeMapper(GenericAveragePool2DParser(), BasicAveragePool2DBindings)
 
 # Dummy nodes are intended for development purposes only!
 # They should always generate compiler errors to not accidentally end up in production code
@@ -126,6 +127,7 @@ GenericMapping = {
     'Gemm': GEMMLayer([GEMMMapper]),
     'iGELU': GELULayer([GELUMapper]),
     'Gelu': GELULayer([GELUMapper]),
+    'BatchNormalization': BatchNormLayer([BatchNormMapper]),  
     'LayerNormalization': LayerNormLayer([LayerNormMapper]),
     'iLayerNorm': LayerNormLayer([iLayerNormMapper]),
     'IntegerDiv': DivLayer([IntegerDivMapper]),
