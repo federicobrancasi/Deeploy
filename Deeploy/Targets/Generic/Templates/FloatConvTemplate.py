@@ -25,9 +25,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from Deeploy.DeeployTypes import NodeTemplate
+from typing import Dict, List, Tuple
 
-reference2DTemplate = NodeTemplate("""
+from Deeploy.DeeployTypes import NetworkContext, NodeTemplate, OperatorRepresentation
+
+class _Float_Conv2D_Template(NodeTemplate):
+
+    def __init__(self, templateStr):
+        super().__init__(templateStr)
+
+    def alignToContext(self, ctxt: NetworkContext,
+                       operatorRepresentation: OperatorRepresentation) -> Tuple[NetworkContext, Dict, List[str]]:
+
+        # Check if bias is available
+        if 'bias' in operatorRepresentation:
+            operatorRepresentation['has_bias'] = True
+        else:
+            operatorRepresentation['has_bias'] = False
+            operatorRepresentation['bias'] = 'NULL'
+                  
+        return ctxt, operatorRepresentation, []
+    
+reference2DTemplate = _Float_Conv2D_Template("""
 <%
 batchOffsetIn = ch_im_in * dim_im_in_x * dim_im_in_y
 batchOffsetOut = ch_im_out * dim_im_out_x * dim_im_out_y
@@ -43,9 +62,8 @@ BEGIN_SINGLE_CORE
             ref_${data_out}_${data_in}, ${ch_im_in}, ${dim_im_in_x}, ${dim_im_in_y},
             ${weight}, ${ch_im_out}, ${dim_kernel_x}, ${dim_kernel_y},
             ${stride_x}, ${stride_y},
-            ${bias},
-            ${has_bias},
-            ref_${data_out}_${data_out}
+            ref_${data_out}_${data_out},
+            ${bias if has_bias else "NULL"}
         );
         ref_${data_out}_${data_in} += ${batchOffsetIn};
         ref_${data_out}_${data_out} += ${batchOffsetOut};
