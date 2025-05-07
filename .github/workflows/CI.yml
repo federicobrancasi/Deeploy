@@ -77,6 +77,8 @@ jobs:
         Dequant
         QuantizedLinear
         QuantizedConv
+        testBatchNorm
+        testResnet18
         
 
   generic-models:
