@@ -35,7 +35,7 @@ class _Float_Conv2D_Template(NodeTemplate):
     def alignToContext(self, ctxt: NetworkContext,
                        operatorRepresentation: OperatorRepresentation) -> Tuple[NetworkContext, Dict, List[str]]:
 
-        # Check if bias is available
+        # FBRANCASI: Check if bias is available
         if 'bias' in operatorRepresentation:
             operatorRepresentation['has_bias'] = True
         else:

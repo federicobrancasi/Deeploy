@@ -46,7 +46,7 @@ class _Conv2D_Template(NodeTemplate):
         if hasattr(data_out, "_signed") and hasattr(data_out, "nLevels"):
             operatorRepresentation['output_offset'] = -(data_out._signed == 0) * int(data_out.nLevels // 2)
 
-        # Check if bias is available
+        # FBRANCASI: Check if bias is available
         if 'bias' in operatorRepresentation:
             operatorRepresentation['has_bias'] = True
         else:
