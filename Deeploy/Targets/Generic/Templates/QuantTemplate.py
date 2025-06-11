@@ -32,51 +32,6 @@ class _QuantTemplate(NodeTemplate):
     def __init__(self, templateStr):
         super().__init__(templateStr)
 
-
-    # def alignToContext(self, ctxt: NetworkContext,
-    #                    operatorRepresentation: OperatorRepresentation) -> Tuple[NetworkContext, Dict, List[str]]:
-
-    #     data_out = ctxt.lookup(operatorRepresentation['data_out'])
-
-    #     # Calculate output offset for bias hoisting
-    #     output_offset = 0
-    #     if hasattr(data_out, "_signed") and hasattr(data_out, "nLevels"):
-    #         if data_out._signed == 0:
-    #             print("node involved: ", operatorRepresentation)
-    #         output_offset = -(data_out._signed == 0) * int(data_out.nLevels // 2)
-
-    #     operatorRepresentation['output_offset'] = output_offset
-
-    #     return ctxt, operatorRepresentation, []
-    
-
-    def alignToContext(self, ctxt: NetworkContext,
-                    operatorRepresentation: OperatorRepresentation) -> Tuple[NetworkContext, Dict, List[str]]:
-
-        data_out = ctxt.lookup(operatorRepresentation['data_out'])
-        scale = operatorRepresentation.get('scale', 1.0)
-        
-        # Scale-based heuristic
-        # - scale = 128.0: Input quantization ([-1,1] → [0,255]) → NO bias hoisting
-        # - scale ≈ 255.0: Activation quantization ([0,1] → [0,255]) → YES bias hoisting  
-        # - scale > 200: Likely activation quantization → YES bias hoisting
-        # - scale ≤ 128: Likely input quantization → NO bias hoisting
-        
-        if abs(scale - 128.0) < 1e-6:
-            should_apply_bias_hoisting = False  # Exact 128.0 = input quantization
-        elif scale > 200.0:
-            should_apply_bias_hoisting = True   # High scale = activation quantization
-        else:
-            should_apply_bias_hoisting = False  # Low scale = input quantization
-        
-        # Calculate output offset for bias hoisting
-        output_offset = 0
-        if should_apply_bias_hoisting and hasattr(data_out, "_signed") and hasattr(data_out, "nLevels"):
-            output_offset = -(data_out._signed == 0) * int(data_out.nLevels // 2)
-
-        operatorRepresentation['output_offset'] = output_offset
-        return ctxt, operatorRepresentation, []
-
 referenceTemplate = _QuantTemplate("""
 // Quantization (Name: ${nodeName}, Op: ${nodeOp})
 BEGIN_SINGLE_CORE
@@ -93,13 +48,7 @@ BEGIN_SINGLE_CORE
         if (quantized < ${min_val}) quantized = ${min_val};
         if (quantized > ${max_val}) quantized = ${max_val};
 
-        // Apply bias hoisting offset
-        ${data_out}[i] = (${data_out_type.referencedType.typeName})(quantized + ${output_offset});
-
-        if (i == 157410 || i == 157411 || i == 157412|| i == 157413) {
-            printf("DEBUG: i=%u, input_val=%.30f, scaled_val=%.30f, quantized=%d, output_offset=%d, final_output=%d", 
-                   i, input_val, scaled_val, quantized, ${output_offset}, (int)(quantized + ${output_offset}));
-        }
+        ${data_out}[i] = (${data_out_type.referencedType.typeName})(quantized);
     }
 
 END_SINGLE_CORE

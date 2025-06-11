@@ -79,6 +79,7 @@ jobs:
         QuantizedConv
         testBatchNorm
         testResnet18
+        testResnet18TrueQuantized
         
 
   generic-models:
