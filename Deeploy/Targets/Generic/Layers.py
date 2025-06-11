@@ -642,20 +642,23 @@ class DequantLayer(ONNXLayer):
     def __init__(self, maps: List[NodeMapper]):
         super().__init__(maps)
 
+
 class AveragePoolLayer(ONNXLayer):
 
     def __init__(self, maps: List[NodeMapper]):
         super().__init__(maps)
+
+
 class BatchNormLayer(ONNXLayer):
 
     def __init__(self, maps: List[NodeMapper]):
         super().__init__(maps)
 
     def computeOps(self):
-        ops_per_element = 4  
-        
+        ops_per_element = 4
+
         total_elements = self.mapper.parser.operatorRepresentation['data_in_size']
-        
+
         channel_ops = self.mapper.parser.operatorRepresentation['ch_im_in']
-        
+
         return total_elements * ops_per_element + channel_ops

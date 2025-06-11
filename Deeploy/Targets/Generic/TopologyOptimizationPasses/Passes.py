@@ -1050,11 +1050,11 @@ class GEMMRequantMergePass(ReplaceSequentialPatternPass):
 def _quant_pattern_floor_fun(graph: gs.Graph, match: Match, name: str):
     matched_nodes = [m for k, m in match.nodes_map.items()]
 
-    div_node = matched_nodes[0]  
-    add_node1 = matched_nodes[1] 
-    add_node2 = matched_nodes[2] 
-    floor_node = matched_nodes[3] 
-    clip_node = matched_nodes[4]  
+    div_node = matched_nodes[0]
+    add_node1 = matched_nodes[1]
+    add_node2 = matched_nodes[2]
+    floor_node = matched_nodes[3]
+    clip_node = matched_nodes[4]
 
     input_tensor = div_node.inputs[0]
     output_tensor = clip_node.outputs[0]
@@ -1068,7 +1068,7 @@ def _quant_pattern_floor_fun(graph: gs.Graph, match: Match, name: str):
     rounding_input = add_node2.inputs[1] if add_node2.inputs[0] == add_node1.outputs[0] else add_node2.inputs[0]
     if hasattr(rounding_input, 'values'):
         rounding_value = float(rounding_input.values.item())
-        if abs(rounding_value - 0.5) > 1e-6:  
+        if abs(rounding_value - 0.5) > 1e-6:
             return graph
 
     min_input = clip_node.inputs[1] if len(clip_node.inputs) > 1 else None
@@ -1138,6 +1138,7 @@ class QuantPatternPass(ReplaceSequentialPatternPass):
         name = "_QUANT_PATTERN_FLOOR_PASS"
         super().__init__(graph, _quant_pattern_floor_fun, name)
 
+
 def _recognize_dequant_fun(graph: gs.Graph, match: Match, name: str):
     matched_nodes = [m for k, m in match.nodes_map.items()]
 
@@ -1193,7 +1194,7 @@ class DequantPatternPass(ReplaceSequentialPatternPass):
 def _extract_padding_fun_avgpool(graph: gs.Graph, match: Match, name: str, value = 0):
     matched_nodes = [m for k, m in match.nodes_map.items()]
     pool = matched_nodes[0]
-    
+
     if 'pads' in pool.attrs and np.sum(pool.attrs['pads']) > 0:
         pads = copy.deepcopy(pool.attrs['pads'])
         shape = copy.deepcopy(pool.inputs[0].shape)
@@ -1222,20 +1223,21 @@ def _extract_padding_fun_avgpool(graph: gs.Graph, match: Match, name: str, value
         padding_value = 0
 
         newPad = gs.Node(op = 'Pad',
-                        name = name + '_pad',
-                        attrs = {
-                            'pads': newPads,
-                            'mode': 'constant',
-                            'value': padding_value
-                        },
-                        inputs = [pool.inputs[0]],
-                        outputs = [newPoolInput])
+                         name = name + '_pad',
+                         attrs = {
+                             'pads': newPads,
+                             'mode': 'constant',
+                             'value': padding_value
+                         },
+                         inputs = [pool.inputs[0]],
+                         outputs = [newPoolInput])
 
         pool.inputs[0] = newPoolInput
         graph.nodes.append(newPad)
         graph.cleanup().toposort()
 
     return graph
+
 
 @contextagnostic
 class ExtractPaddingFromAveragePoolPass(ReplaceSequentialPatternPass):

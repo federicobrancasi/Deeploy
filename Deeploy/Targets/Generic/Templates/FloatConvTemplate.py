@@ -29,6 +29,7 @@ from typing import Dict, List, Tuple
 
 from Deeploy.DeeployTypes import NetworkContext, NodeTemplate, OperatorRepresentation
 
+
 class _Float_Conv2D_Template(NodeTemplate):
 
     def __init__(self, templateStr):
@@ -43,9 +44,10 @@ class _Float_Conv2D_Template(NodeTemplate):
         else:
             operatorRepresentation['has_bias'] = False
             operatorRepresentation['bias'] = 'NULL'
-                  
+
         return ctxt, operatorRepresentation, []
-    
+
+
 reference2DTemplate = _Float_Conv2D_Template("""
 <%
 batchOffsetIn = ch_im_in * dim_im_in_x * dim_im_in_y

@@ -27,7 +27,9 @@ from typing import Dict, List, Tuple
 
 from Deeploy.DeeployTypes import NetworkContext, NodeTemplate, OperatorRepresentation
 
+
 class _BatchNorm2DTemplate(NodeTemplate):
+
     def __init__(self, templateStr):
         super().__init__(templateStr)
 
@@ -44,6 +46,7 @@ class _BatchNorm2DTemplate(NodeTemplate):
             operatorRepresentation['output_offset'] = -(data_out._signed == 0) * int(data_out.nLevels // 2)
 
         return ctxt, operatorRepresentation, []
+
 
 referenceTemplate = _BatchNorm2DTemplate("""
 <%
@@ -90,4 +93,3 @@ BEGIN_SINGLE_CORE
     }
 END_SINGLE_CORE
 """)
-
