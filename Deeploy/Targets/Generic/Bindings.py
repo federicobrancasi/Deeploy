@@ -34,20 +34,19 @@ from Deeploy.CommonExtensions.DataTypes import IntegerDataTypes, SignedIntegerDa
     uint8_t
 from Deeploy.DeeployTypes import CodeTransformation, NodeBinding
 from Deeploy.FutureExtension.CodeTransformationPasses.FutureCodeTransformation import FutureGeneration
-from Deeploy.Targets.Generic.Templates import AddTemplate, ConcatTemplate, ConvTemplate, DebugPrintTemplate, \
-    DequantTemplate, DummyTemplate, DWConvTemplate, FloatAddTemplate, FloatConvTemplate, FloatDivTemplate, \
-    FloatGELUTemplate, FloatGemmTemplate, FloatLayernormTemplate, FloatMatMulTemplate, FloatMaxPoolTemplate, \
-    FloatMulTemplate, FloatPadTemplate, FloatReluTemplate, FloatSoftmaxTemplate, GatherTemplate, GemmTemplate, \
-    IntegerDivTemplate, ITAMaxTemplate, ITAPartialMaxTemplate, MatMulTemplate, MaxPoolTemplate, MulTemplate, \
-    PadTemplate, QuantTemplate, ReduceMeanTemplate, ReduceSumTemplate, RequantShiftTemplate, ReshapeTemplate, \
-    RQIntegerDivTemplate, RQSiGELUTemplate, SliceTemplate, TransposeTemplate, iGELUTemplate, iLayernormTemplate, \
-    AveragePoolTemplate, iRMSNormTemplate, iSoftmaxTemplate, BatchNormTemplate
-from Deeploy.Targets.Generic.TypeCheckers import AddChecker, AveragePoolChecker, ConcatChecker, ConvChecker, DebugPrintChecker, \
-    DequantChecker, DivChecker, DummyChecker, GatherChecker, GELUChecker, GEMMChecker, LayerNormChecker, \
-    MatMulChecker, MaxPoolChecker, MulChecker, PadChecker, QuantChecker, ReduceMeanChecker, ReduceSumChecker, \
-    ReluChecker, RequantShiftChecker, ReshapeChecker, RQIntegerDivChecker, SliceChecker, SoftmaxChecker, \
-    TransposeChecker, BatchNormChecker
-
+from Deeploy.Targets.Generic.Templates import AddTemplate, AveragePoolTemplate, BatchNormTemplate, ConcatTemplate, \
+    ConvTemplate, DebugPrintTemplate, DequantTemplate, DummyTemplate, DWConvTemplate, FloatAddTemplate, \
+    FloatConvTemplate, FloatDivTemplate, FloatGELUTemplate, FloatGemmTemplate, FloatLayernormTemplate, \
+    FloatMatMulTemplate, FloatMaxPoolTemplate, FloatMulTemplate, FloatPadTemplate, FloatReluTemplate, \
+    FloatSoftmaxTemplate, GatherTemplate, GemmTemplate, IntegerDivTemplate, ITAMaxTemplate, ITAPartialMaxTemplate, \
+    MatMulTemplate, MaxPoolTemplate, MulTemplate, PadTemplate, QuantTemplate, ReduceMeanTemplate, ReduceSumTemplate, \
+    RequantShiftTemplate, ReshapeTemplate, RQIntegerDivTemplate, RQSiGELUTemplate, SliceTemplate, TransposeTemplate, \
+    iGELUTemplate, iLayernormTemplate, iRMSNormTemplate, iSoftmaxTemplate
+from Deeploy.Targets.Generic.TypeCheckers import AddChecker, AveragePoolChecker, BatchNormChecker, ConcatChecker, \
+    ConvChecker, DebugPrintChecker, DequantChecker, DivChecker, DummyChecker, GatherChecker, GELUChecker, GEMMChecker, \
+    LayerNormChecker, MatMulChecker, MaxPoolChecker, MulChecker, PadChecker, QuantChecker, ReduceMeanChecker, \
+    ReduceSumChecker, ReluChecker, RequantShiftChecker, ReshapeChecker, RQIntegerDivChecker, SliceChecker, \
+    SoftmaxChecker, TransposeChecker
 
 BasicTransformer = CodeTransformation([ArgumentStructGeneration(), MemoryManagementGeneration(), FutureGeneration()])
 
@@ -281,27 +280,29 @@ BasicDequantBindings = [
 ]
 
 BasicAveragePool2DBindings = [
-    NodeBinding(AveragePoolChecker([PointerClass(int8_t)], [PointerClass(int8_t)]), 
-                AveragePoolTemplate.referenceTemplate,
-                BasicTransformer)
+    NodeBinding(AveragePoolChecker([PointerClass(int8_t)], [PointerClass(int8_t)]),
+                AveragePoolTemplate.referenceTemplate, BasicTransformer)
 ] + [
     NodeBinding(AveragePoolChecker([PointerClass(float32_t)], [PointerClass(float32_t)]),
-                AveragePoolTemplate.floatReferenceTemplate,
-                BasicTransformer)
+                AveragePoolTemplate.floatReferenceTemplate, BasicTransformer)
 ]
 
 BasicBatchNorm2DBindings = [
-    NodeBinding(BatchNormChecker([PointerClass(int8_t), PointerClass(int8_t), 
-                                 PointerClass(int8_t), PointerClass(int32_t), 
-                                 PointerClass(int32_t)], 
-                                [PointerClass(int8_t)]), 
-                BatchNormTemplate.referenceTemplate,
-                BasicTransformer)
+    NodeBinding(
+        BatchNormChecker([
+            PointerClass(int8_t),
+            PointerClass(int8_t),
+            PointerClass(int8_t),
+            PointerClass(int32_t),
+            PointerClass(int32_t)
+        ], [PointerClass(int8_t)]), BatchNormTemplate.referenceTemplate, BasicTransformer)
 ] + [
-    NodeBinding(BatchNormChecker([PointerClass(float32_t), PointerClass(float32_t), 
-                                 PointerClass(float32_t), PointerClass(float32_t), 
-                                 PointerClass(float32_t)],
-                                [PointerClass(float32_t)]),
-                BatchNormTemplate.floatReferenceTemplate,
-                BasicTransformer)
+    NodeBinding(
+        BatchNormChecker([
+            PointerClass(float32_t),
+            PointerClass(float32_t),
+            PointerClass(float32_t),
+            PointerClass(float32_t),
+            PointerClass(float32_t)
+        ], [PointerClass(float32_t)]), BatchNormTemplate.floatReferenceTemplate, BasicTransformer)
 ]

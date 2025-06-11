@@ -637,6 +637,7 @@ class AveragePoolChecker(SignPropTypeChecker):
         else:
             return [False]
 
+
 class BatchNormChecker(SignPropTypeChecker):
 
     def __init__(self, input_types: Sequence[Type[Pointer]], output_types: Sequence[Type[Pointer]]):
@@ -652,6 +653,3 @@ class BatchNormChecker(SignPropTypeChecker):
             return [True]
         else:
             return [False]
-
-
-            

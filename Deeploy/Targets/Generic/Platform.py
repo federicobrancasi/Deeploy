@@ -27,28 +27,29 @@
 
 from Deeploy.DeeployTypes import ConstantBuffer, DeploymentEngine, DeploymentPlatform, NodeMapper, NodeTemplate, \
     StructBuffer, TopologyOptimizer, TransientBuffer, VariableBuffer
-from Deeploy.Targets.Generic.Bindings import BasicAddBindings, BasicConv1DBinding, BasicConv2DBindings, \
-    BasicDebugPrintBindings, BasicDequantBindings, BasicDivBindings, BasicDWConv1DBinding, BasicDWConv2DBinding, \
-    BasicGatherBindings, BasicGELUBindings, BasicGEMMBindings, BasicITAPartialSoftmaxBinding, BasicITASoftmaxBinding, \
-    BasicLayerNormBindings, BasicMatMulBindings, BasicMaxPool2DBindings, BasicMulBindings, BasicPad1DBindings, \
-    BasicPad2DBindings, BasicQuantBindings, BasicReduceMeanBindings, BasicReduceSumBindings, BasicReluBinding, \
-    BasicReshapeBindings, BasicRQIntegerDivBinding, BasicRQSBindings, BasicRQSGELUBinding, BasicSliceBindings, \
-    BasicSoftmaxBindings, BasicTransposeBindings, DummyBinding, BasicAveragePool2DBindings, BasicBatchNorm2DBindings
-from Deeploy.Targets.Generic.Layers import AddLayer, AveragePoolLayer, ConvLayer, DebugPrintLayer, DequantLayer, DivLayer, GatherLayer, \
-    GELULayer, GEMMLayer, ITAMaxLayer, LayerNormLayer, MatMulLayer, MaxPoolLayer, MulLayer, PadLayer, QuantLayer, \
-    ReduceMeanLayer, ReduceSumLayer, ReluLayer, RequantShiftLayer, ReshapeLayer, RQIntegerDivLayer, RQSiGELULayer, \
-    SliceLayer, SoftmaxLayer, TransposeLayer, BatchNormLayer
+from Deeploy.Targets.Generic.Bindings import BasicAddBindings, BasicAveragePool2DBindings, BasicBatchNorm2DBindings, \
+    BasicConv1DBinding, BasicConv2DBindings, BasicDebugPrintBindings, BasicDequantBindings, BasicDivBindings, \
+    BasicDWConv1DBinding, BasicDWConv2DBinding, BasicGatherBindings, BasicGELUBindings, BasicGEMMBindings, \
+    BasicITAPartialSoftmaxBinding, BasicITASoftmaxBinding, BasicLayerNormBindings, BasicMatMulBindings, \
+    BasicMaxPool2DBindings, BasicMulBindings, BasicPad1DBindings, BasicPad2DBindings, BasicQuantBindings, \
+    BasicReduceMeanBindings, BasicReduceSumBindings, BasicReluBinding, BasicReshapeBindings, BasicRQIntegerDivBinding, \
+    BasicRQSBindings, BasicRQSGELUBinding, BasicSliceBindings, BasicSoftmaxBindings, BasicTransposeBindings, \
+    DummyBinding
+from Deeploy.Targets.Generic.Layers import AddLayer, AveragePoolLayer, BatchNormLayer, ConvLayer, DebugPrintLayer, \
+    DequantLayer, DivLayer, GatherLayer, GELULayer, GEMMLayer, ITAMaxLayer, LayerNormLayer, MatMulLayer, MaxPoolLayer, \
+    MulLayer, PadLayer, QuantLayer, ReduceMeanLayer, ReduceSumLayer, ReluLayer, RequantShiftLayer, ReshapeLayer, \
+    RQIntegerDivLayer, RQSiGELULayer, SliceLayer, SoftmaxLayer, TransposeLayer
 from Deeploy.Targets.Generic.Parsers import AddParser, DebugParser, DequantParser, DivParser, DummyParser, \
-    FlattenParser, GatherParser, GELUParser, GenericConv1DParser, GenericConv2DParser, GenericDWConv1DParser, \
-    GenericDWConv2DParser, GenericGEMMParser, GenericMaxPool2DParser, IntegerDivParser, ITAMaxParser, \
-    ITAPartialMaxParser, LayerNormParser, MatMulParser, MulParser, Pad1DParser, Pad2DParser, QuantParser, \
-    ReduceMeanParser, ReduceSumParser, ReluParser, RequantShiftParser, ReshapeParser, RQIntegerDivParser, \
-    RQSiGELUParser, SliceParser, SoftmaxParser, TransposeParser, UnsqueezeParser, iLayerNormParser, iSoftmaxParser, \
-    GenericAveragePool2DParser, GenericBatchNorm2DParser
+    FlattenParser, GatherParser, GELUParser, GenericAveragePool2DParser, GenericBatchNorm2DParser, \
+    GenericConv1DParser, GenericConv2DParser, GenericDWConv1DParser, GenericDWConv2DParser, GenericGEMMParser, \
+    GenericMaxPool2DParser, IntegerDivParser, ITAMaxParser, ITAPartialMaxParser, LayerNormParser, MatMulParser, \
+    MulParser, Pad1DParser, Pad2DParser, QuantParser, ReduceMeanParser, ReduceSumParser, ReluParser, \
+    RequantShiftParser, ReshapeParser, RQIntegerDivParser, RQSiGELUParser, SliceParser, SoftmaxParser, \
+    TransposeParser, UnsqueezeParser, iLayerNormParser, iSoftmaxParser
 from Deeploy.Targets.Generic.Templates import AllocateTemplate, FreeTemplate
-from Deeploy.Targets.Generic.TopologyOptimizationPasses.Passes import DequantPatternPass, ExtractPaddingFromAveragePoolPass, ExtractPaddingFromConvPass, \
-    ExtractPaddingFromPoolPass, MatMulAddMergePass, MergeConstAddAndRequantPass, QuantPatternPass, \
-    iGELURequantMergePass
+from Deeploy.Targets.Generic.TopologyOptimizationPasses.Passes import DequantPatternPass, \
+    ExtractPaddingFromAveragePoolPass, ExtractPaddingFromConvPass, ExtractPaddingFromPoolPass, MatMulAddMergePass, \
+    MergeConstAddAndRequantPass, QuantPatternPass, iGELURequantMergePass
 
 AddMapper = NodeMapper(AddParser(), BasicAddBindings)
 Conv1DMapper = NodeMapper(GenericConv1DParser(), [BasicConv1DBinding])
@@ -89,7 +90,6 @@ BatchNormMapper = NodeMapper(GenericBatchNorm2DParser(), BasicBatchNorm2DBinding
 
 SliceMapper = NodeMapper(SliceParser(), BasicSliceBindings)
 
-
 # Dummy nodes are intended for development purposes only!
 # They should always generate compiler errors to not accidentally end up in production code
 DummyMapper = NodeMapper(DummyParser(), [DummyBinding])
@@ -104,7 +104,7 @@ GenericMapping = {
     'Gemm': GEMMLayer([GEMMMapper]),
     'iGELU': GELULayer([GELUMapper]),
     'Gelu': GELULayer([GELUMapper]),
-    'BatchNormalization': BatchNormLayer([BatchNormMapper]),  
+    'BatchNormalization': BatchNormLayer([BatchNormMapper]),
     'LayerNormalization': LayerNormLayer([LayerNormMapper]),
     'iLayerNorm': LayerNormLayer([iLayerNormMapper]),
     'IntegerDiv': DivLayer([IntegerDivMapper]),

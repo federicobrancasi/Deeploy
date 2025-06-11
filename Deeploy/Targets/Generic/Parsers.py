@@ -2436,7 +2436,7 @@ class SoftmaxCrossEntropyLossGradParser(NodeParser):
         self.operatorRepresentation['num_classes'] = log_prob.shape[1]
 
         return ctxt, True
-    
+
 
 class SGDParser(NodeParser):
 
@@ -2465,37 +2465,38 @@ class SGDParser(NodeParser):
         self.operatorRepresentation['lr'] = node.attrs['lr']
 
         return ctxt, True
-    
+
+
 class GenericAveragePool2DParser(NodeParser):
 
     def __init__(self):
         super().__init__()
 
     def parseNode(self, node: gs.Node) -> bool:
-        
+
         required_attrs = ['kernel_shape', 'pads', 'strides']
         for attr in required_attrs:
             if attr not in node.attrs:
                 print(f"Missing required attribute: {attr}")
                 return False
-        
+
         if len(node.inputs) < 1 or len(node.outputs) < 1:
             print("Not enough inputs/outputs")
             return False
-            
+
         pads = node.attrs['pads']
         kernel_shape = node.attrs['kernel_shape']
         strides = node.attrs['strides']
-        
+
         if len(pads) != 4 or len(kernel_shape) != 2 or len(strides) != 2:
             print(f"Invalid dimensions!")
             print(f"pads={pads}, kernel_shape={kernel_shape}, strides={strides}")
             return False
-            
+
         self.operatorRepresentation['kernel_shape'] = kernel_shape
         self.operatorRepresentation['pads'] = pads
         self.operatorRepresentation['strides'] = strides
-        
+
         self.operatorRepresentation['padding_x'] = int(pads[0])
         self.operatorRepresentation['padding_y'] = int(pads[1])
         self.operatorRepresentation['padding_x_left'] = int(pads[0])
@@ -2506,32 +2507,35 @@ class GenericAveragePool2DParser(NodeParser):
         self.operatorRepresentation['stride_y'] = int(strides[1])
         self.operatorRepresentation['dim_kernel_x'] = int(kernel_shape[0])
         self.operatorRepresentation['dim_kernel_y'] = int(kernel_shape[1])
-        
+
         if 'ceil_mode' in node.attrs:
             self.operatorRepresentation['ceil_mode'] = node.attrs['ceil_mode']
         else:
             self.operatorRepresentation['ceil_mode'] = 0
-            
+
         if 'count_include_pad' in node.attrs:
             self.operatorRepresentation['count_include_pad'] = node.attrs['count_include_pad']
         else:
             self.operatorRepresentation['count_include_pad'] = 0
-            
+
         return True
 
-    def parseNodeCtxt(self, ctxt: NetworkContext, node: gs.Node, channels_first: bool = True) -> Tuple[NetworkContext, bool]:
+    def parseNodeCtxt(self,
+                      ctxt: NetworkContext,
+                      node: gs.Node,
+                      channels_first: bool = True) -> Tuple[NetworkContext, bool]:
         data_in = ctxt.lookup(node.inputs[0].name)
         data_out = ctxt.lookup(node.outputs[0].name)
-        
+
         self.operatorRepresentation['data_in'] = data_in.name
         self.operatorRepresentation['data_out'] = data_out.name
         self.operatorRepresentation['data_in_size'] = np.prod(data_in.shape)
         self.operatorRepresentation['data_out_size'] = np.prod(data_out.shape)
-        
+
         if len(data_in.shape) != 4 or len(data_out.shape) != 4:
             print(f"Invalid shapes: data_in={data_in.shape}, data_out={data_out.shape}")
             return ctxt, False
-            
+
         self.operatorRepresentation['batch'] = data_in.shape[0]
         if channels_first:
             self.operatorRepresentation['ch_im_in'] = data_in.shape[1]
@@ -2547,9 +2551,9 @@ class GenericAveragePool2DParser(NodeParser):
             self.operatorRepresentation['ch_im_out'] = data_out.shape[3]
             self.operatorRepresentation['dim_im_out_x'] = data_out.shape[1]
             self.operatorRepresentation['dim_im_out_y'] = data_out.shape[2]
-            
+
         return ctxt, True
-        
+
 
 class GenericBatchNorm2DParser(NodeParser):
 
@@ -2557,36 +2561,39 @@ class GenericBatchNorm2DParser(NodeParser):
         super().__init__()
 
     def parseNode(self, node: gs.Node) -> bool:
-        
+
         required_attrs = ['epsilon', 'momentum']
         for attr in required_attrs:
             if attr not in node.attrs:
                 print(f"Missing required attribute: {attr}")
                 return False
-        
+
         if len(node.inputs) < 5 or len(node.outputs) < 1:
             print("Not enough inputs or outputs")
             return False
-            
+
         self.operatorRepresentation['eps'] = float(node.attrs['epsilon'])
         self.operatorRepresentation['momentum'] = float(node.attrs['momentum'])
-        
+
         if 'training_mode' in node.attrs:
             self.operatorRepresentation['training_mode'] = bool(node.attrs['training_mode'])
         else:
             self.operatorRepresentation['training_mode'] = False
-        
+
         return True
 
-    def parseNodeCtxt(self, ctxt: NetworkContext, node: gs.Node, channels_first: bool = True) -> Tuple[NetworkContext, bool]:
-    
-        data_in = ctxt.lookup(node.inputs[0].name)  
-        weight = ctxt.lookup(node.inputs[1].name)  
-        bias = ctxt.lookup(node.inputs[2].name) 
-        running_mean = ctxt.lookup(node.inputs[3].name) 
-        running_var = ctxt.lookup(node.inputs[4].name) 
-        data_out = ctxt.lookup(node.outputs[0].name) 
-        
+    def parseNodeCtxt(self,
+                      ctxt: NetworkContext,
+                      node: gs.Node,
+                      channels_first: bool = True) -> Tuple[NetworkContext, bool]:
+
+        data_in = ctxt.lookup(node.inputs[0].name)
+        weight = ctxt.lookup(node.inputs[1].name)
+        bias = ctxt.lookup(node.inputs[2].name)
+        running_mean = ctxt.lookup(node.inputs[3].name)
+        running_var = ctxt.lookup(node.inputs[4].name)
+        data_out = ctxt.lookup(node.outputs[0].name)
+
         self.operatorRepresentation['data_in'] = data_in.name
         self.operatorRepresentation['weight'] = weight.name
         self.operatorRepresentation['bias'] = bias.name
@@ -2595,12 +2602,12 @@ class GenericBatchNorm2DParser(NodeParser):
         self.operatorRepresentation['data_out'] = data_out.name
         self.operatorRepresentation['data_in_size'] = np.prod(data_in.shape)
         self.operatorRepresentation['data_out_size'] = np.prod(data_out.shape)
-        
+
         if len(data_in.shape) != 4 or len(data_out.shape) != 4:
             print(f"Invalid shapes!")
             print(f"data_in={data_in.shape}, data_out={data_out.shape}")
             return ctxt, False
-            
+
         self.operatorRepresentation['batch'] = data_in.shape[0]
         if channels_first:
             self.operatorRepresentation['ch_im_in'] = data_in.shape[1]
