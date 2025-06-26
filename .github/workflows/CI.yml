@@ -112,7 +112,8 @@ jobs:
         Quant
         Dequant
         QuantizedLinear
-
+        QuantizedConv
+        
 
   generic-models:
     uses: ./.github/workflows/TestRunnerGeneric.yml
@@ -342,6 +343,7 @@ jobs:
         testFloatSoftmaxCrossEntropy
         testFloatSoftmaxCrossEntropyGrad
         QuantizedLinear
+        QuantizedConv
       num-cores: 8
 
   siracusa-models:

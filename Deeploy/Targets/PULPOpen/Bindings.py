@@ -415,3 +415,10 @@ BasicDequantBindings = [
     NodeBinding(DequantChecker([PointerClass(int32_t)], [PointerClass(float32_t)]), DequantTemplate.referenceTemplate,
                 ForkTransformer),
 ]
+
+PULPDequantConv2DBindings = [
+    NodeBinding(
+        ConvChecker([PointerClass(int8_t), PointerClass(int8_t),
+                     PointerClass(int32_t)], [PointerClass(int32_t)]), IntConvTemplate.reference2DTemplate,
+        ForkTransformer)
+]
