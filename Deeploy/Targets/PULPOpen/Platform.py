@@ -56,7 +56,7 @@ from Deeploy.Targets.PULPOpen.Bindings import PULPDequantBindings, PULPQuantBind
     PULPAveragePool2DBindings
 from Deeploy.Targets.PULPOpen.Layers import PULPRQSConvLayer, PULPRQSGEMMLayer
 from Deeploy.Targets.PULPOpen.Parsers import PULPConv1DParser, PULPConv2DParser, PULPDequantConv2DParser, \
-    PULPDWConv1DParser, PULPDWConv2DParser, PULPFPConv2DParser, PULPGEMMParser, PULPMatrixVecParser, \
+    PULPDWConv1DParser, PULPDWConv2DParser, PULPFPConv2DParser, PULPFPConv2DWithBiasParser, PULPGEMMParser, PULPMatrixVecParser, \
     PULPTallGEMMParser
 from Deeploy.Targets.PULPOpen.Templates import AllocateTemplate, FreeTemplate
 from Deeploy.Targets.PULPOpen.Tiler import PULPAddTilingReadyBindings, PULPConcatTilingReadyBindings, \
@@ -97,6 +97,7 @@ RQGELU_int8_Mapper = NodeMapper(RQSiGELUParser(), PULPiRQSGELUTilingReadyBinding
 Conv1DMapper = NodeMapper(PULPConv1DParser(), [PULPConv1DBinding])
 DWConv1DMapper = NodeMapper(PULPDWConv1DParser(), [PULPDWConv1DBinding])
 FPConv2DMapper = NodeMapper(PULPFPConv2DParser(), PULPConv2DTilingReadyBindings)
+FPConv2DWithBiasMapper = NodeMapper(PULPFPConv2DWithBiasParser(), PULPConv2DTilingReadyBindings)
 Conv2DMapper = NodeMapper(PULPConv2DParser(), PULPRQSConv2DTilingReadyBindings)
 DWConv2DMapper = NodeMapper(PULPDWConv2DParser(), PULPRQSDWConv2DTilingReadyBindings)
 GEMMMapper = NodeMapper(PULPGEMMParser(), PULPRQSGEMMTilingReadyBindings)
@@ -131,7 +132,7 @@ Conv2DDequantMapper = NodeMapper(PULPDequantConv2DParser(), PULPDequantConv2DBin
 AveragePoolMapper = NodeMapper(GenericAveragePool2DParser(), PULPAveragePool2DBindings)
 
 PULPMapping = {
-    'Conv': ConvLayer([Conv2DDequantMapper, FPConv2DMapper]),
+    'Conv': ConvLayer([Conv2DDequantMapper, FPConv2DWithBiasMapper, FPConv2DMapper]),
     'RequantizedConv': PULPRQSConvLayer([Conv2DMapper, DWConv2DMapper, Conv1DMapper, DWConv1DMapper]),
     'RequantizedGemm': PULPRQSGEMMLayer([MatrixVecMapper, TallGEMMMapper, GEMMMapper]),
     'Gemm': GEMMLayer([FloatGEMMMapper, GEMMDequantMapper]),
