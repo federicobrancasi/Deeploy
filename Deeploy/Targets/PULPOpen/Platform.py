@@ -38,19 +38,22 @@ from Deeploy.Targets.Generic.Layers import AddLayer, ConcatLayer, ConvLayer, Gat
     LayerNormLayer, MatMulLayer, MaxPoolLayer, MulLayer, PadLayer, QuantLayer, ReduceMeanLayer, ReduceSumLayer, \
     ReluLayer, RequantShiftLayer, ReshapeLayer, RQIntegerDivLayer, RQSiGELULayer, RQSiHardswishLayer, SGDLayer, \
     SliceLayer, SoftmaxCrossEntropyLossGradLayer, SoftmaxCrossEntropyLossLayer, SoftmaxGradLayer, SoftmaxLayer, \
-    TransposeLayer, iHardswishLayer, iRMSNormLayer
+    TransposeLayer, iHardswishLayer, iRMSNormLayer, AveragePoolLayer
 from Deeploy.Targets.Generic.Parsers import AddParser, ConcatParser, DequantParser, FlattenParser, GatherParser, \
     GELUParser, GEMMParser, LayerNormParser, MatMulParser, MaxPool2DParser, MulParser, Pad1DParser, Pad2DParser, \
     QuantParser, ReduceMeanParser, ReduceSumParser, ReluParser, RequantShiftParser, ReshapeParser, RQAddParser, \
     RQIntegerDivParser, RQSiGELUParser, RQSiHardswishParser, SGDParser, SliceParser, \
     SoftmaxCrossEntropyLossGradParser, SoftmaxCrossEntropyLossParser, SoftmaxGradParser, SoftmaxParser, \
-    TransposeParser, UniformRequantShiftParser, UnsqueezeParser, iHardswishParser, iRMSNormParser, iSoftmaxParser
+    TransposeParser, UniformRequantShiftParser, UnsqueezeParser, iHardswishParser, iRMSNormParser, iSoftmaxParser, \
+    GenericAveragePool2DParser
 from Deeploy.Targets.Generic.Templates import AllocateTemplate as BasicAllocateTemplate
 from Deeploy.Targets.Generic.TopologyOptimizationPasses.Passes import DequantPatternPass, IntegerDivRequantMergePass, \
     MergeConstAddAndRequantPass, MergeTrueIntegerDivRequantShiftPass, QuantPatternPass, RQSSplitPass, \
-    SkipEmptyConcatPass, SkipUnityRequantPass, iGELURequantMergePass, iHardswishRequantMergePass
+    SkipEmptyConcatPass, SkipUnityRequantPass, iGELURequantMergePass, iHardswishRequantMergePass, \
+    ExtractPaddingFromAveragePoolPass
 from Deeploy.Targets.PULPOpen.Bindings import PULPDequantBindings, PULPQuantBindings, PULPConv1DBinding, \
-    PULPDequantConv2DBindings, PULPDMASliceBindings, PULPDWConv1DBinding, PULPReduceMeanBindings
+    PULPDequantConv2DBindings, PULPDMASliceBindings, PULPDWConv1DBinding, PULPReduceMeanBindings, \
+    PULPAveragePool2DBindings
 from Deeploy.Targets.PULPOpen.Layers import PULPRQSConvLayer, PULPRQSGEMMLayer
 from Deeploy.Targets.PULPOpen.Parsers import PULPConv1DParser, PULPConv2DParser, PULPDequantConv2DParser, \
     PULPDWConv1DParser, PULPDWConv2DParser, PULPFPConv2DParser, PULPGEMMParser, PULPMatrixVecParser, \
@@ -125,6 +128,8 @@ DequantMapper = NodeMapper(DequantParser(), PULPDequantBindings)
 GEMMDequantMapper = NodeMapper(GEMMParser(), BasicGEMMBindings)
 Conv2DDequantMapper = NodeMapper(PULPDequantConv2DParser(), PULPDequantConv2DBindings)
 
+AveragePoolMapper = NodeMapper(GenericAveragePool2DParser(), PULPAveragePool2DBindings)
+
 PULPMapping = {
     'Conv': ConvLayer([Conv2DDequantMapper, FPConv2DMapper]),
     'RequantizedConv': PULPRQSConvLayer([Conv2DMapper, DWConv2DMapper, Conv1DMapper, DWConv1DMapper]),
@@ -163,7 +168,8 @@ PULPMapping = {
     'SoftmaxGrad': SoftmaxGradLayer([SoftmaxGradMapper]),
     'SoftmaxCrossEntropyLoss': SoftmaxCrossEntropyLossLayer([SoftmaxCrossEntropyLossMapper]),
     'SoftmaxCrossEntropyLossGrad': SoftmaxCrossEntropyLossGradLayer([SoftmaxCrossEntropyLossGradMapper]),
-    'SGD': SGDLayer([SGDMapper])
+    'SGD': SGDLayer([SGDMapper]),
+    'AveragePool': AveragePoolLayer([AveragePoolMapper]),
 }
 
 
@@ -253,7 +259,8 @@ PULPOptimizer = TopologyOptimizer([
     PULPGEMMRequantMergePass(),
     PULPMatMulRequantMergePass(),
     # ExtractPaddingFromConvPass(),
-    PULPAddRequantMergePass()
+    PULPAddRequantMergePass(),
+    ExtractPaddingFromAveragePoolPass(),
 ])
 
 # SCHEREMO: stdint is included before pulp_nn_kernels.h because it is supposed to be included in there, but isn't...

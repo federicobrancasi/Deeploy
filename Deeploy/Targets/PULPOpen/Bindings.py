@@ -37,9 +37,9 @@ from Deeploy.CommonExtensions.DataTypes import IntegerDataTypes, SignedIntegerDa
 from Deeploy.DeeployTypes import CodeTransformation, NodeBinding, NodeTemplate
 from Deeploy.FutureExtension.Bindings.AutoFutureBinding import AutoFutureBinding
 from Deeploy.FutureExtension.CodeTransformationPasses.FutureCodeTransformation import FutureGeneration
-from Deeploy.Targets.Generic.Templates import AddTemplate, ConcatTemplate, DequantTemplate, FloatReduceSumTemplate, \
+from Deeploy.Targets.Generic.Templates import AddTemplate, AveragePoolTemplate, ConcatTemplate, DequantTemplate, FloatReduceSumTemplate, \
     GatherTemplate, QuantTemplate, RQSiGELUTemplate, iHardswishTemplate
-from Deeploy.Targets.Generic.TypeCheckers import AddChecker, ConcatChecker, ConvChecker, DequantChecker, \
+from Deeploy.Targets.Generic.TypeCheckers import AddChecker, AveragePoolChecker, ConcatChecker, ConvChecker, DequantChecker, \
     GatherChecker, GELUChecker, GEMMChecker, HardswishChecker, LayerNormChecker, MatMulChecker, MulChecker, \
     QuantChecker, ReduceMeanChecker, ReluChecker, RQAddChecker, RQHardswishChecker, SGDChecker, SliceChecker, \
     SoftmaxChecker, SoftmaxCrossEntropyLossChecker, TransposeChecker
@@ -421,7 +421,7 @@ PULPDequantConv2DBindings = [
         ConvChecker([PointerClass(int8_t), PointerClass(int8_t),
                      PointerClass(int32_t)], [PointerClass(int32_t)]), IntConvTemplate.reference2DTemplate,
         ForkTransformer)
-]            
+]
 
 PULPiRMSNormBindings = [
     NodeBinding(LayerNormChecker([PointerClass(int8_t), PointerClass(int32_t)], [PointerClass(int8_t)]),
@@ -495,4 +495,12 @@ PULPDequantConv2DBindings = [
         ConvChecker([PointerClass(int8_t), PointerClass(int8_t),
                      PointerClass(int32_t)], [PointerClass(int32_t)]), IntConvTemplate.reference2DTemplate,
         ForkTransformer)
+]
+
+PULPAveragePool2DBindings = [
+    NodeBinding(AveragePoolChecker([PointerClass(int8_t)], [PointerClass(int8_t)]),
+                AveragePoolTemplate.referenceTemplate, ForkTransformer)
+] + [
+    NodeBinding(AveragePoolChecker([PointerClass(float32_t)], [PointerClass(float32_t)]),
+                AveragePoolTemplate.floatReferenceTemplate, ForkTransformer)
 ]
