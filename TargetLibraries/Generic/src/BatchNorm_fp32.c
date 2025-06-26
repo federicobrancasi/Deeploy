@@ -36,26 +36,21 @@ void BatchNorm2d_fp32_fp32_NCHW(float32_t const *__restrict__ pSrcA, uint32_t C,
                                 float32_t const *__restrict__ bias,
                                 float32_t const *__restrict__ running_mean,
                                 float32_t const *__restrict__ running_var,
-                                float32_t eps,
-                                float32_t *__restrict__ pDstC)
-{
-    for (uint32_t c = 0; c < C; c++)
-    {
-        float32_t mean = running_mean[c];
-        float32_t std_dev = sqrtf(running_var[c] + eps);
-        float32_t gamma = weight[c];
-        float32_t beta = bias[c];
+                                float32_t eps, float32_t *__restrict__ pDstC) {
+  for (uint32_t c = 0; c < C; c++) {
+    float32_t mean = running_mean[c];
+    float32_t std_dev = sqrtf(running_var[c] + eps);
+    float32_t gamma = weight[c];
+    float32_t beta = bias[c];
 
-        for (uint32_t h = 0; h < H; h++)
-        {
-            for (uint32_t w = 0; w < W; w++)
-            {
-                uint32_t idx = c * H * W + h * W + w;
-                float32_t centered = pSrcA[idx] - mean;
-                float32_t normalized = centered / std_dev;
-                float32_t scaled = normalized * gamma;
-                pDstC[idx] = scaled + beta;
-            }
-        }
+    for (uint32_t h = 0; h < H; h++) {
+      for (uint32_t w = 0; w < W; w++) {
+        uint32_t idx = c * H * W + h * W + w;
+        float32_t centered = pSrcA[idx] - mean;
+        float32_t normalized = centered / std_dev;
+        float32_t scaled = normalized * gamma;
+        pDstC[idx] = scaled + beta;
+      }
     }
+  }
 }

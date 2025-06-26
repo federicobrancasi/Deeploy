@@ -55,6 +55,8 @@
 #include "types.h"
 #include "utils.h"
 
+#include "kernel/AvgPool.h"
+#include "kernel/BatchNorm.h"
 #include "kernel/Convolution.h"
 #include "kernel/DWConvolution.h"
 #include "kernel/Div.h"
@@ -70,7 +72,5 @@
 #include "kernel/RQHardswish.h"
 #include "kernel/RequantShift.h"
 #include "kernel/Softmax.h"
-#include "kernel/BatchNorm.h"
-#include "kernel/AvgPool.h"
 
 #endif //__DEEPLOY_BASIC_MATH_HEADER_

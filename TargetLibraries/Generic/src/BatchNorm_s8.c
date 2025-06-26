@@ -36,37 +36,30 @@ void BatchNorm2d_s8_s8_NCHW(int8_t const *__restrict__ pSrcA, uint32_t C,
                             int8_t const *__restrict__ bias,
                             int32_t const *__restrict__ running_mean,
                             int32_t const *__restrict__ running_var,
-                            float32_t eps,
-                            int8_t *__restrict__ pDstC)
-{
-    for (uint32_t c = 0; c < C; c++)
-    {
-        int32_t mean = running_mean[c];
-        int32_t variance = running_var[c];
-        int32_t std_dev = (int32_t)sqrtf((float)(variance + (int32_t)(eps * (1 << 16))));
-        int32_t gamma = weight[c];
-        int32_t beta = bias[c];
+                            float32_t eps, int8_t *__restrict__ pDstC) {
+  for (uint32_t c = 0; c < C; c++) {
+    int32_t mean = running_mean[c];
+    int32_t variance = running_var[c];
+    int32_t std_dev =
+        (int32_t)sqrtf((float)(variance + (int32_t)(eps * (1 << 16))));
+    int32_t gamma = weight[c];
+    int32_t beta = bias[c];
 
-        for (uint32_t h = 0; h < H; h++)
-        {
-            for (uint32_t w = 0; w < W; w++)
-            {
-                uint32_t idx = c * H * W + h * W + w;
-                int32_t input_val = pSrcA[idx];
-                int32_t normalized = ((input_val - mean) << 16) / std_dev;
-                int32_t scaled = (normalized * gamma >> 16) + beta;
+    for (uint32_t h = 0; h < H; h++) {
+      for (uint32_t w = 0; w < W; w++) {
+        uint32_t idx = c * H * W + h * W + w;
+        int32_t input_val = pSrcA[idx];
+        int32_t normalized = ((input_val - mean) << 16) / std_dev;
+        int32_t scaled = (normalized * gamma >> 16) + beta;
 
-                if (scaled > 127)
-                {
-                    scaled = 127;
-                }
-                else if (scaled < -128)
-                {
-                    scaled = -128;
-                }
-
-                pDstC[idx] = (int8_t)scaled;
-            }
+        if (scaled > 127) {
+          scaled = 127;
+        } else if (scaled < -128) {
+          scaled = -128;
         }
+
+        pDstC[idx] = (int8_t)scaled;
+      }
     }
+  }
 }

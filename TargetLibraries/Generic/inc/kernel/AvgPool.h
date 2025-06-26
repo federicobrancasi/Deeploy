@@ -52,8 +52,8 @@
  * simd        = no
  */
 void AvgPool2d_s8_s8_NCHW(int8_t const *__restrict__ pSrcA, uint32_t C,
-                          uint32_t H, uint32_t W,
-                          uint32_t P, uint32_t Q, uint32_t SP, uint32_t SQ, uint32_t pool_size,
+                          uint32_t H, uint32_t W, uint32_t P, uint32_t Q,
+                          uint32_t SP, uint32_t SQ, uint32_t pool_size,
                           int8_t *__restrict__ pDstC, int32_t input_offset,
                           int32_t output_offset);
 
@@ -67,8 +67,8 @@ void AvgPool2d_s8_s8_NCHW(int8_t const *__restrict__ pSrcA, uint32_t C,
  * simd        = no
  */
 void AvgPool2d_fp32_fp32_NCHW(float const *__restrict__ pSrcA, uint32_t C,
-                              uint32_t H, uint32_t W,
-                              uint32_t P, uint32_t Q, uint32_t SP, uint32_t SQ, uint32_t pool_size,
+                              uint32_t H, uint32_t W, uint32_t P, uint32_t Q,
+                              uint32_t SP, uint32_t SQ, uint32_t pool_size,
                               float *__restrict__ pDstC);
 
 #endif //__DEEPLOY_BASIC_MATH_POOLING_KERNEL_HEADER_

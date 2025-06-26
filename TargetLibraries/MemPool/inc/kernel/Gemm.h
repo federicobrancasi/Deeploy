@@ -65,14 +65,12 @@ void Gemm_parallel_s8_rv32im(
     int32_t Y_offset, uint32_t core_id, uint32_t numThreads);
 
 // Mapper Functions
-static inline void __attribute__((always_inline))
-Gemm_parallel_s8(int8_t const *__restrict__ pSrcA,
-                 int8_t const *__restrict__ pSrcB,
-                 int32_t const *__restrict__ pSrcC, int32_t *__restrict__ pDstY,
-                 uint32_t M, uint32_t N, uint32_t P, int32_t alpha,
-                 int32_t beta, int32_t transA, int32_t transB, int32_t A_offset,
-                 int32_t B_offset, int32_t C_offset, int32_t Y_offset,
-                 uint32_t core_id, uint32_t numThreads) {
+static inline void __attribute__((always_inline)) Gemm_parallel_s8(
+    int8_t const *__restrict__ pSrcA, int8_t const *__restrict__ pSrcB,
+    int32_t const *__restrict__ pSrcC, int32_t *__restrict__ pDstY, uint32_t M,
+    uint32_t N, uint32_t P, int32_t alpha, int32_t beta, int32_t transA,
+    int32_t transB, int32_t A_offset, int32_t B_offset, int32_t C_offset,
+    int32_t Y_offset, uint32_t core_id, uint32_t numThreads) {
   Gemm_parallel_s8_rv32im(pSrcA, pSrcB, pSrcC, pDstY, M, N, P, alpha, beta,
                           transA, transB, A_offset, B_offset, C_offset,
                           Y_offset, core_id, numThreads);

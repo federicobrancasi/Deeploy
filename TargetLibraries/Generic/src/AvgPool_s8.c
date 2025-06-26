@@ -30,30 +30,23 @@
 #include "DeeployBasicMath.h"
 
 void AvgPool2d_s8_s8_NCHW(int8_t const *__restrict__ pSrcA, uint32_t C,
-                          uint32_t H, uint32_t W,
-                          uint32_t P, uint32_t Q, uint32_t SP, uint32_t SQ, uint32_t pool_size,
+                          uint32_t H, uint32_t W, uint32_t P, uint32_t Q,
+                          uint32_t SP, uint32_t SQ, uint32_t pool_size,
                           int8_t *__restrict__ pDstC, int32_t input_offset,
-                          int32_t output_offset)
-{
+                          int32_t output_offset) {
   uint32_t H_out = (H - P) / SP + 1;
   uint32_t W_out = (W - Q) / SQ + 1;
 
-  for (uint32_t c = 0; c < C; ++c)
-  {
-    for (uint32_t h_out = 0; h_out < H_out; ++h_out)
-    {
-      for (uint32_t w_out = 0; w_out < W_out; ++w_out)
-      {
+  for (uint32_t c = 0; c < C; ++c) {
+    for (uint32_t h_out = 0; h_out < H_out; ++h_out) {
+      for (uint32_t w_out = 0; w_out < W_out; ++w_out) {
         int32_t sum = 0;
 
-        for (uint32_t p = 0; p < P; ++p)
-        {
-          for (uint32_t q = 0; q < Q; ++q)
-          {
+        for (uint32_t p = 0; p < P; ++p) {
+          for (uint32_t q = 0; q < Q; ++q) {
             uint32_t h_in = h_out * SP + p;
             uint32_t w_in = w_out * SQ + q;
-            if (h_in < H && w_in < W)
-            {
+            if (h_in < H && w_in < W) {
               sum += (pSrcA[c * H * W + h_in * W + w_in] + input_offset);
             }
           }

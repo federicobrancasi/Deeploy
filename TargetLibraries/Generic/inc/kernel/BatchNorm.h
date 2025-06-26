@@ -55,9 +55,8 @@ void BatchNorm2d_s8_s8_NCHW(int8_t const *__restrict__ pSrcA, uint32_t C,
                             int8_t const *__restrict__ bias,
                             int32_t const *__restrict__ running_mean,
                             int32_t const *__restrict__ running_var,
-                            float32_t eps,
-                            int8_t *__restrict__ pDstC);
-    
+                            float32_t eps, int8_t *__restrict__ pDstC);
+
 /*
  * 2D Batch Normalization (Float32) ----------------------------------
  * kernel      = BatchNorm2d_fp32_fp32_NCHW
@@ -71,7 +70,6 @@ void BatchNorm2d_fp32_fp32_NCHW(float32_t const *__restrict__ pSrcA, uint32_t C,
                                 float32_t const *__restrict__ bias,
                                 float32_t const *__restrict__ running_mean,
                                 float32_t const *__restrict__ running_var,
-                                float32_t eps,
-                                float32_t *__restrict__ pDstC);
+                                float32_t eps, float32_t *__restrict__ pDstC);
 
 #endif //__DEEPLOY_BASIC_MATH_BATCHNORM_KERNEL_HEADER_
