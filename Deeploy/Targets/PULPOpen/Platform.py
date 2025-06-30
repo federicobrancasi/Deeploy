@@ -58,8 +58,8 @@ from Deeploy.Targets.PULPOpen.Parsers import PULPConv1DParser, PULPConv2DParser,
     PULPMatrixVecParser, PULPTallGEMMParser
 from Deeploy.Targets.PULPOpen.Templates import AllocateTemplate, FreeTemplate
 from Deeploy.Targets.PULPOpen.Tiler import PULPAddTilingReadyBindings, PULPConcatTilingReadyBindings, \
-    PULPConv2DTilingReadyBindings, PULPFlattenTilingReadyBindings, PULPFPGELUTilingReadyBindings, \
-    PULPFPGEMMTilingReadyBindings, PULPGatherTilingReadyBindings, PULPiHardswishTilingReadyBindings, \
+    PULPConv2DTilingReadyBindings, PULPDequantTilingReadyBindings, PULPFlattenTilingReadyBindings, PULPFPGELUTilingReadyBindings, \
+    PULPFPGEMMTilingReadyBindings, PULPGatherTilingReadyBindings, PULPQuantTilingReadyBindings, PULPiHardswishTilingReadyBindings, \
     PULPiRMSNormTilingReadyBindings, PULPiRQSGELUTilingReadyBindings, PULPLayernormTilingReadyBindings, \
     PULPMatMulTilingReadyBindings, PULPMaxPool2DTilingReadyBindings, PULPMulTilingReadyBindings, \
     PULPReduceSumTilingReadyBindings, PULPReluTilingReadyBindings, PULPRQAddTilingReadyBindings, \
@@ -121,8 +121,8 @@ SoftmaxCrossEntropyLossMapper = NodeMapper(SoftmaxCrossEntropyLossParser(), PULP
 SoftmaxCrossEntropyLossGradMapper = NodeMapper(SoftmaxCrossEntropyLossGradParser(),
                                                PULPSoftmaxCrossEntropyGradTilingReadyBindings)
 SGDMapper = NodeMapper(SGDParser(), PULPSGDTilingReadyBindings)
-QuantMapper = NodeMapper(QuantParser(), PULPQuantBindings)
-DequantMapper = NodeMapper(DequantParser(), PULPDequantBindings)
+QuantMapper = NodeMapper(QuantParser(), PULPQuantTilingReadyBindings)
+DequantMapper = NodeMapper(DequantParser(), PULPDequantTilingReadyBindings)
 
 GEMMDequantMapper = NodeMapper(GEMMParser(), BasicGEMMBindings)
 Conv2DDequantMapper = NodeMapper(PULPDequantConv2DParser(), PULPDequantConv2DBindings)
