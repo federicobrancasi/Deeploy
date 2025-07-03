@@ -37,11 +37,11 @@ from Deeploy.Targets.Generic.Bindings import BasicAddBindings, BasicAveragePool2
     BasicMaxPool2DBindings, BasicMulBindings, BasicPad1DBindings, BasicPad2DBindings, BasicQuantBindings, \
     BasicReduceMeanBindings, BasicReduceSumBindings, BasicReluBinding, BasicReshapeBindings, BasicRQIntegerDivBinding, \
     BasicRQSBindings, BasicRQSGELUBinding, BasicSliceBindings, BasicSoftmaxBindings, BasicTransposeBindings, \
-    DummyBinding
+    DummyBinding, BasicFloorClipBindings, BasicConcatBindings
 from Deeploy.Targets.Generic.Layers import AddLayer, AveragePoolLayer, BatchNormLayer, ConvLayer, DebugPrintLayer, \
     DequantLayer, DivLayer, GatherLayer, GELULayer, GEMMLayer, ITAMaxLayer, LayerNormLayer, MatMulLayer, MaxPoolLayer, \
     MulLayer, PadLayer, QuantLayer, ReduceMeanLayer, ReduceSumLayer, ReluLayer, RequantShiftLayer, ReshapeLayer, \
-    RQIntegerDivLayer, RQSiGELULayer, SliceLayer, SoftmaxLayer, TransposeLayer
+    RQIntegerDivLayer, RQSiGELULayer, SliceLayer, SoftmaxLayer, TransposeLayer, FloorClipLayer, ConcatLayer
 from Deeploy.Targets.Generic.Parsers import AddParser, DebugParser, DequantParser, DivParser, DummyParser, \
     FlattenParser, GatherParser, GELUParser, GenericBatchNorm2DParser, GenericConv1DParser, GenericConv2DParser, GenericDWConv1DParser, \
     GenericDWConv2DParser, GenericGEMMParser, GenericMaxPool2DParser, IntegerDivParser, ITAMaxParser, \
@@ -70,7 +70,7 @@ from Deeploy.Targets.Generic.Parsers import AddParser, ConcatParser, DebugParser
 from Deeploy.Targets.Generic.Templates import AllocateTemplate, FreeTemplate
 from Deeploy.Targets.Generic.TopologyOptimizationPasses.Passes import DequantPatternPass, \
     ExtractPaddingFromAveragePoolPass, ExtractPaddingFromConvPass, ExtractPaddingFromPoolPass, MatMulAddMergePass, \
-    MergeConstAddAndRequantPass, QuantPatternPass, iGELURequantMergePass
+    MergeConstAddAndRequantPass, QuantPatternPass, iGELURequantMergePass, FloorClipPatternPass
 
 AddMapper = NodeMapper(AddParser(), BasicAddBindings)
 Conv1DMapper = NodeMapper(GenericConv1DParser(), [BasicConv1DBinding])
@@ -116,7 +116,13 @@ SliceMapper = NodeMapper(SliceParser(), BasicSliceBindings)
 # They should always generate compiler errors to not accidentally end up in production code
 DummyMapper = NodeMapper(DummyParser(), [DummyBinding])
 
+
+FloorClipMapper = NodeMapper(FloorClipParser(), BasicFloorClipBindings)
+ConcatMapper = NodeMapper(ConcatParser(), BasicConcatBindings)
+
 GenericMapping = {
+    'Concat': ConcatLayer([ConcatMapper]),  
+    'FloorClip': FloorClipLayer([FloorClipMapper]),
     'Add': AddLayer([AddMapper]),
     'Conv': ConvLayer([Conv2DMapper, DWConv2DMapper, Conv1DMapper, DWConv1DMapper]),
     'Concat': ConcatLayer([ConcatMapper]),
@@ -193,6 +199,7 @@ class GenericStructBuffer(StructBuffer):
 GenericOptimizer = TopologyOptimizer([
     QuantPatternPass(),
     DequantPatternPass(),
+    FloorClipPatternPass(), 
     iGELURequantMergePass(),
     MatMulAddMergePass(),
     MergeConstAddAndRequantPass(),

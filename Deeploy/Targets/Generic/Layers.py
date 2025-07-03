@@ -662,3 +662,9 @@ class BatchNormLayer(ONNXLayer):
         channel_ops = self.mapper.parser.operatorRepresentation['ch_im_in']
 
         return total_elements * ops_per_element + channel_ops
+
+
+class FloorClipLayer(ONNXLayer):
+
+    def __init__(self, maps: List[NodeMapper]):
+        super().__init__(maps)

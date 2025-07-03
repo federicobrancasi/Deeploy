@@ -39,13 +39,13 @@ from Deeploy.Targets.Generic.Templates import AddTemplate, AveragePoolTemplate, 
     ConvTemplate, DebugPrintTemplate, DequantTemplate, DummyTemplate, DWConvTemplate, FloatAddTemplate, \
     FloatConvTemplate, FloatDivTemplate, FloatDWConvTemplate, FloatGELUTemplate, FloatGemmTemplate, \
     FloatLayernormTemplate, FloatMatMulTemplate, FloatMaxPoolTemplate, FloatMulTemplate, FloatPadTemplate, \
-    FloatReduceMeanTemplate, FloatReluTemplate, FloatSoftmaxTemplate, GatherTemplate, GemmTemplate, \
+    FloatReduceMeanTemplate, FloatReluTemplate, FloatSoftmaxTemplate, FloorClipTemplate, GatherTemplate, GemmTemplate, \
     IntegerDivTemplate, ITAMaxTemplate, ITAPartialMaxTemplate, MatMulTemplate, MaxPoolTemplate, MulTemplate, \
     PadTemplate, QuantTemplate, ReduceMeanTemplate, ReduceSumTemplate, RequantShiftTemplate, ReshapeTemplate, \
     RQIntegerDivTemplate, RQSiGELUTemplate, SliceTemplate, TransposeTemplate, iGELUTemplate, iLayernormTemplate, \
     iRMSNormTemplate, iSoftmaxTemplate
 from Deeploy.Targets.Generic.TypeCheckers import AddChecker, AveragePoolChecker, BatchNormChecker, ConcatChecker, \
-    ConvChecker, DebugPrintChecker, DequantChecker, DivChecker, DummyChecker, GatherChecker, GELUChecker, GEMMChecker, \
+    ConvChecker, DebugPrintChecker, DequantChecker, DivChecker, DummyChecker, FloorClipChecker, GatherChecker, GELUChecker, GEMMChecker, \
     LayerNormChecker, MatMulChecker, MaxPoolChecker, MulChecker, PadChecker, QuantChecker, ReduceMeanChecker, \
     ReduceSumChecker, ReluChecker, RequantShiftChecker, ReshapeChecker, RQIntegerDivChecker, SliceChecker, \
     SoftmaxChecker, TransposeChecker
@@ -320,4 +320,11 @@ BasicBatchNorm2DBindings = [
             PointerClass(float32_t),
             PointerClass(float32_t)
         ], [PointerClass(float32_t)]), BatchNormTemplate.floatReferenceTemplate, BasicTransformer)
+]
+
+BasicFloorClipBindings = [
+    NodeBinding(FloorClipChecker([PointerClass(type)], [PointerClass(int8_t)]), FloorClipTemplate.referenceTemplate, BasicTransformer) 
+    for type in IntegerDataTypes
+] + [
+    NodeBinding(FloorClipChecker([PointerClass(float32_t)], [PointerClass(int8_t)]), FloorClipTemplate.referenceTemplate, BasicTransformer)
 ]

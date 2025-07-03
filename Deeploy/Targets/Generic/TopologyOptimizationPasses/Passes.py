@@ -1252,3 +1252,64 @@ class ExtractPaddingFromAveragePoolPass(ReplaceSequentialPatternPass):
         name = "_EXTRACT_AVGPOOL_PASS"
 
         super().__init__(graph, _extract_padding_fun_avgpool, name)
+
+
+def _merge_floor_clip_fun(graph: gs.Graph, match: Match, name: str):
+    matched_nodes = [m for k, m in match.nodes_map.items()]
+
+    floor_node = matched_nodes[0]
+    clip_node = matched_nodes[1]
+
+    # Get input tensor from Floor node
+    input_tensor = floor_node.inputs[0]
+    # Get output tensor from Clip node
+    output_tensor = clip_node.outputs[0]
+
+    # Extract min and max values from Clip node
+    min_input = clip_node.inputs[1] if len(clip_node.inputs) > 1 else None
+    max_input = clip_node.inputs[2] if len(clip_node.inputs) > 2 else None
+
+    min_value = float(min_input.values.item()) if (min_input is not None and hasattr(min_input, 'values')) else -128
+    max_value = float(max_input.values.item()) if (max_input is not None and hasattr(max_input, 'values')) else 127
+
+    # Create FloorClip attributes
+    floor_clip_attrs = {
+        'min_val': np.array([min_value], dtype=np.float32),
+        'max_val': np.array([max_value], dtype=np.float32),
+    }
+
+    # Create the new FloorClip node
+    floor_clip_node = gs.Node(op='FloorClip',
+                             name=name + '_FloorClip',
+                             inputs=[input_tensor],
+                             outputs=[output_tensor],
+                             attrs=floor_clip_attrs)
+
+    # Add the new node to the graph
+    graph.nodes.append(floor_clip_node)
+
+    # Remove the old nodes
+    for node in matched_nodes:
+        node.inputs.clear()
+        node.outputs.clear()
+        graph.nodes.remove(node)
+
+    return graph
+
+
+@contextagnostic
+class FloorClipPatternPass(ReplaceSequentialPatternPass):
+
+    def __init__(self):
+        graph = gs.Graph()
+        input_var = gs.Variable(name='input_0')
+
+        # Create the pattern: Floor -> Clip
+        floor_out = graph.layer(inputs=[input_var], outputs=['floor_out'], op='Floor', name='floor')
+        clip_out = graph.layer(inputs=floor_out, outputs=['clip_out'], op='Clip', name='clip')
+
+        graph.outputs.append(clip_out)
+        graph.inputs.append(input_var)
+
+        name = "_FLOOR_CLIP_PATTERN_PASS"
+        super().__init__(graph, _merge_floor_clip_fun, name)
