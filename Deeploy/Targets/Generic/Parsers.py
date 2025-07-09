@@ -993,24 +993,24 @@ class SqueezeParser(NodeParser):
         super().__init__()
 
     def parseNode(self, node: gs.Node) -> (bool):
-        
+
         # FBRANCASI: Support both old and new ONNX opset format for squeeze operation:
         #               - Old: axes as attribute, 1 input (data)
         #               - New: axes as input tensor, 2 inputs (data + axes) (opset 17)
         ret = all([len(node.inputs) >= 1, len(node.inputs) <= 2, len(node.outputs) == 1])
-        
+
         if ret:
-            if len(node.inputs) == 2: 
+            if len(node.inputs) == 2:
                 axes_input = node.inputs[1]
                 if hasattr(axes_input, 'values'):
                     self.operatorRepresentation['axes'] = axes_input.values.tolist()
                 else:
                     self.operatorRepresentation['axes'] = None
-            elif 'axes' in node.attrs: 
+            elif 'axes' in node.attrs:
                 self.operatorRepresentation['axes'] = node.attrs['axes']
-            else: 
+            else:
                 self.operatorRepresentation['axes'] = None
-        
+
         return ret
 
     def parseNodeCtxt(self,
@@ -1021,7 +1021,7 @@ class SqueezeParser(NodeParser):
         inputs = ['data_in']
         outputs = ['data_out']
 
-        for idx, inputNode in enumerate(node.inputs[:1]):  
+        for idx, inputNode in enumerate(node.inputs[:1]):
             self.operatorRepresentation[inputs[idx]] = ctxt.lookup(inputNode.name).name
         for idx, outputNode in enumerate(node.outputs):
             self.operatorRepresentation[outputs[idx]] = ctxt.lookup(outputNode.name).name
@@ -2773,12 +2773,7 @@ class FloorClipParser(NodeParser):
         super().__init__()
 
     def parseNode(self, node: gs.Node) -> bool:
-        ret = all([
-            'min_val' in node.attrs,
-            'max_val' in node.attrs,
-            len(node.inputs) == 1,
-            len(node.outputs) == 1
-        ])
+        ret = all(['min_val' in node.attrs, 'max_val' in node.attrs, len(node.inputs) == 1, len(node.outputs) == 1])
 
         if ret:
             self.operatorRepresentation['min_val'] = float(node.attrs['min_val'])
@@ -2807,10 +2802,7 @@ class FloorParser(NodeParser):
         super().__init__()
 
     def parseNode(self, node: gs.Node) -> bool:
-        ret = all([
-            len(node.inputs) == 1,
-            len(node.outputs) == 1
-        ])
+        ret = all([len(node.inputs) == 1, len(node.outputs) == 1])
         return ret
 
     def parseNodeCtxt(self,
@@ -2861,14 +2853,14 @@ class ClipParser(NodeParser):
 
         # Try to extract min/max values from constant inputs
         min_val = -128.0  # Default
-        max_val = 127.0   # Default
-        
+        max_val = 127.0  # Default
+
         try:
             if len(node.inputs) >= 2:
                 min_buffer = ctxt.lookup(node.inputs[1].name)
                 if hasattr(min_buffer, 'values') and min_buffer.values is not None:
                     min_val = float(min_buffer.values.item())
-            
+
             if len(node.inputs) >= 3:
                 max_buffer = ctxt.lookup(node.inputs[2].name)
                 if hasattr(max_buffer, 'values') and max_buffer.values is not None:
@@ -2876,7 +2868,7 @@ class ClipParser(NodeParser):
         except:
             # Fall back to defaults if extraction fails
             pass
-        
+
         self.operatorRepresentation["min_val"] = min_val
         self.operatorRepresentation["max_val"] = max_val
 
@@ -2889,10 +2881,7 @@ class AbsParser(NodeParser):
         super().__init__()
 
     def parseNode(self, node: gs.Node) -> bool:
-        ret = all([
-            len(node.inputs) == 1,
-            len(node.outputs) == 1
-        ])
+        ret = all([len(node.inputs) == 1, len(node.outputs) == 1])
         return ret
 
     def parseNodeCtxt(self,
@@ -2908,4 +2897,3 @@ class AbsParser(NodeParser):
         self.operatorRepresentation["size"] = np.prod(data_in.shape)
 
         return ctxt, True
-

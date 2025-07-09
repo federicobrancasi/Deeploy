@@ -686,4 +686,3 @@ class AbsLayer(ONNXLayer):
 
     def __init__(self, maps: List[NodeMapper]):
         super().__init__(maps)
-

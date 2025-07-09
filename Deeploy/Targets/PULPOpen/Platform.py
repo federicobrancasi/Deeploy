@@ -50,22 +50,23 @@ from Deeploy.Targets.Generic.TopologyOptimizationPasses.Passes import DequantPat
     ExtractPaddingFromAveragePoolPass, IntegerDivRequantMergePass, MergeConstAddAndRequantPass, \
     MergeTrueIntegerDivRequantShiftPass, QuantPatternPass, RQSSplitPass, SkipEmptyConcatPass, SkipUnityRequantPass, \
     iGELURequantMergePass, iHardswishRequantMergePass
-from Deeploy.Targets.PULPOpen.Bindings import PULPAveragePool2DBindings, PULPConv1DBinding, PULPDequantBindings, \
-    PULPDequantConv2DBindings, PULPDMASliceBindings, PULPDWConv1DBinding, PULPQuantBindings, PULPReduceMeanBindings
+from Deeploy.Targets.PULPOpen.Bindings import PULPAveragePool2DBindings, PULPConv1DBinding, PULPDequantConv2DBindings, \
+    PULPDMASliceBindings, PULPDWConv1DBinding, PULPReduceMeanBindings
 from Deeploy.Targets.PULPOpen.Layers import PULPRQSConvLayer, PULPRQSGEMMLayer
 from Deeploy.Targets.PULPOpen.Parsers import PULPConv1DParser, PULPConv2DParser, PULPDequantConv2DParser, \
     PULPDWConv1DParser, PULPDWConv2DParser, PULPFPConv2DParser, PULPFPConv2DWithBiasParser, PULPGEMMParser, \
     PULPMatrixVecParser, PULPTallGEMMParser
 from Deeploy.Targets.PULPOpen.Templates import AllocateTemplate, FreeTemplate
 from Deeploy.Targets.PULPOpen.Tiler import PULPAddTilingReadyBindings, PULPConcatTilingReadyBindings, \
-    PULPConv2DTilingReadyBindings, PULPDequantTilingReadyBindings, PULPFlattenTilingReadyBindings, PULPFPGELUTilingReadyBindings, \
-    PULPFPGEMMTilingReadyBindings, PULPGatherTilingReadyBindings, PULPQuantTilingReadyBindings, PULPiHardswishTilingReadyBindings, \
-    PULPiRMSNormTilingReadyBindings, PULPiRQSGELUTilingReadyBindings, PULPLayernormTilingReadyBindings, \
-    PULPMatMulTilingReadyBindings, PULPMaxPool2DTilingReadyBindings, PULPMulTilingReadyBindings, \
-    PULPReduceSumTilingReadyBindings, PULPReluTilingReadyBindings, PULPRQAddTilingReadyBindings, \
-    PULPRQSConv2DTilingReadyBindings, PULPRQSDWConv2DTilingReadyBindings, PULPRQSGEMMTilingReadyBindings, \
-    PULPRQSiHardswishTilingReadyBindings, PULPRQSMatrixVecTilingReadyBindings, PULPRQSTallGEMMTilingReadyBindings, \
-    PULPRQSTilingReadyBindings, PULPSGDTilingReadyBindings, PULPSoftmaxCrossEntropyGradTilingReadyBindings, \
+    PULPConv2DTilingReadyBindings, PULPDequantTilingReadyBindings, PULPFlattenTilingReadyBindings, \
+    PULPFPGELUTilingReadyBindings, PULPFPGEMMTilingReadyBindings, PULPGatherTilingReadyBindings, \
+    PULPiHardswishTilingReadyBindings, PULPiRMSNormTilingReadyBindings, PULPiRQSGELUTilingReadyBindings, \
+    PULPLayernormTilingReadyBindings, PULPMatMulTilingReadyBindings, PULPMaxPool2DTilingReadyBindings, \
+    PULPMulTilingReadyBindings, PULPQuantTilingReadyBindings, PULPReduceSumTilingReadyBindings, \
+    PULPReluTilingReadyBindings, PULPRQAddTilingReadyBindings, PULPRQSConv2DTilingReadyBindings, \
+    PULPRQSDWConv2DTilingReadyBindings, PULPRQSGEMMTilingReadyBindings, PULPRQSiHardswishTilingReadyBindings, \
+    PULPRQSMatrixVecTilingReadyBindings, PULPRQSTallGEMMTilingReadyBindings, PULPRQSTilingReadyBindings, \
+    PULPSGDTilingReadyBindings, PULPSoftmaxCrossEntropyGradTilingReadyBindings, \
     PULPSoftmaxCrossEntropyTilingReadyBindings, PULPSoftmaxGradTilingReadyBindings, PULPSoftmaxTilingReadyBindings, \
     PULPTransposeTilingReadyBindings, PULPUniformRQSTilingReadyBindings
 from Deeploy.Targets.PULPOpen.TopologyOptimizationPasses.Passes import PULPAddRequantMergePass, \

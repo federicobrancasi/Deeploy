@@ -664,18 +664,18 @@ class FloorClipChecker(SignPropTypeChecker):
                         operatorRepresentation: OperatorRepresentation) -> List[int]:
         min_val = operatorRepresentation['min_val']
         max_val = operatorRepresentation['max_val']
-        
+
         if min_val < 0:
             n_levels = int(max_val - min_val + 1)
         else:
             n_levels = int(max_val + 1)
-            
+
         return [n_levels]
 
     def _inferSignedness(self, inputs: List[VariableBuffer],
                          operatorRepresentation: OperatorRepresentation) -> List[bool]:
         min_val = operatorRepresentation['min_val']
-        return [min_val < 0]  
+        return [min_val < 0]
 
 
 class FloorChecker(SignPropTypeChecker):

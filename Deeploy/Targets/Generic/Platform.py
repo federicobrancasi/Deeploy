@@ -103,7 +103,7 @@ ConcatMapper = NodeMapper(ConcatParser(), BasicConcatBindings)
 DummyMapper = NodeMapper(DummyParser(), [DummyBinding])
 
 GenericMapping = {
-    'Concat': ConcatLayer([ConcatMapper]),  
+    'Concat': ConcatLayer([ConcatMapper]),
     'Floor': FloorLayer([FloorMapper]),
     'Clip': ClipLayer([ClipMapper]),
     'Add': AddLayer([AddMapper]),

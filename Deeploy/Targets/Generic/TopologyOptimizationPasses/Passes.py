@@ -1143,7 +1143,7 @@ def _get_constant_value(variable, graph):
     """Helper function to get constant value from a Variable by tracing back to the Constant node"""
     if hasattr(variable, 'values'):
         return variable.values
-    
+
     for node in graph.nodes:
         if variable in node.outputs:
             if node.op == 'Constant':
@@ -1294,16 +1294,16 @@ def _merge_floor_clip_fun(graph: gs.Graph, match: Match, name: str):
 
     # Create FloorClip attributes
     floor_clip_attrs = {
-        'min_val': np.array([min_value], dtype=np.float32),
-        'max_val': np.array([max_value], dtype=np.float32),
+        'min_val': np.array([min_value], dtype = np.float32),
+        'max_val': np.array([max_value], dtype = np.float32),
     }
 
     # Create the new FloorClip node
-    floor_clip_node = gs.Node(op='FloorClip',
-                             name=name + '_FloorClip',
-                             inputs=[input_tensor],
-                             outputs=[output_tensor],
-                             attrs=floor_clip_attrs)
+    floor_clip_node = gs.Node(op = 'FloorClip',
+                              name = name + '_FloorClip',
+                              inputs = [input_tensor],
+                              outputs = [output_tensor],
+                              attrs = floor_clip_attrs)
 
     # Add the new node to the graph
     graph.nodes.append(floor_clip_node)
@@ -1322,11 +1322,11 @@ class FloorClipPatternPass(ReplaceSequentialPatternPass):
 
     def __init__(self):
         graph = gs.Graph()
-        input_var = gs.Variable(name='input_0')
+        input_var = gs.Variable(name = 'input_0')
 
         # Create the pattern: Floor -> Clip
-        floor_out = graph.layer(inputs=[input_var], outputs=['floor_out'], op='Floor', name='floor')
-        clip_out = graph.layer(inputs=floor_out, outputs=['clip_out'], op='Clip', name='clip')
+        floor_out = graph.layer(inputs = [input_var], outputs = ['floor_out'], op = 'Floor', name = 'floor')
+        clip_out = graph.layer(inputs = floor_out, outputs = ['clip_out'], op = 'Clip', name = 'clip')
 
         graph.outputs.append(clip_out)
         graph.inputs.append(input_var)

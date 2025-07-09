@@ -23,9 +23,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Dict, List, Tuple
+from typing import Dict
 
-from Deeploy.DeeployTypes import CodeSnippet, NodeTemplate, OperatorRepresentation
+from Deeploy.DeeployTypes import NodeTemplate, OperatorRepresentation
 
 
 class FloorTemplate(NodeTemplate):
@@ -37,15 +37,15 @@ class FloorTemplate(NodeTemplate):
 
         data_in = ctxt['data_in']
         data_out = ctxt['data_out']
-        
+
         size = operatorRepresentation['size']
-        
+
         newCtxt = {
             'data_in': data_in,
             'data_out': data_out,
             'size': size,
         }
-        
+
         return newCtxt
 
 
