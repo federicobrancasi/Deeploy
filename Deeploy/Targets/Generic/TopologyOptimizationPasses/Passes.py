@@ -1139,19 +1139,39 @@ class QuantPatternPass(ReplaceSequentialPatternPass):
         super().__init__(graph, _quant_pattern_floor_fun, name)
 
 
+def _get_constant_value(variable, graph):
+    """Helper function to get constant value from a Variable by tracing back to the Constant node"""
+    if hasattr(variable, 'values'):
+        return variable.values
+    
+    for node in graph.nodes:
+        if variable in node.outputs:
+            if node.op == 'Constant':
+                return node.attrs['value'].values
+    return None
+
+
 def _recognize_dequant_fun(graph: gs.Graph, match: Match, name: str):
     matched_nodes = [m for k, m in match.nodes_map.items()]
 
     sub_node = matched_nodes[0]
     mul_node = matched_nodes[1]
 
-    zero_point = float(sub_node.inputs[1].values.item())
+    # FBRANCASI: Get zero point value, handling both Constant and Variable inputs
+    zero_point_vals = _get_constant_value(sub_node.inputs[1], graph)
+    if zero_point_vals is None:
+        return graph
+    zero_point = float(zero_point_vals.item())
 
     mul_input_idx = 0 if mul_node.inputs[0] == sub_node.outputs[0] else 1
 
     const_input_idx = 1 - mul_input_idx
 
-    scale = float(mul_node.inputs[const_input_idx].values.item())
+    # FBRANCASI: Get scale value, handling both Constant and Variable inputs
+    scale_vals = _get_constant_value(mul_node.inputs[const_input_idx], graph)
+    if scale_vals is None:
+        return graph
+    scale = float(scale_vals.item())
 
     bit_width = 8
     if hasattr(sub_node.inputs[0], 'dtype'):

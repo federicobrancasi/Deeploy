@@ -31,46 +31,29 @@ from Deeploy.CommonExtensions.OptimizationPasses.TopologyOptimizationPasses.Lowe
 from Deeploy.DeeployTypes import ConstantBuffer, DeploymentEngine, DeploymentPlatform, NodeMapper, NodeTemplate, \
     StructBuffer, TopologyOptimizer, TransientBuffer, VariableBuffer
 from Deeploy.Targets.Generic.Bindings import BasicAddBindings, BasicAveragePool2DBindings, BasicBatchNorm2DBindings, \
-    BasicConv1DBinding, BasicConv2DBindings, BasicDebugPrintBindings, BasicDequantBindings, BasicDivBindings, \
-    BasicDWConv1DBinding, BasicDWConv2DBindings, BasicGatherBindings, BasicGELUBindings, BasicGEMMBindings, \
-    BasicITAPartialSoftmaxBinding, BasicITASoftmaxBinding, BasicLayerNormBindings, BasicMatMulBindings, \
-    BasicMaxPool2DBindings, BasicMulBindings, BasicPad1DBindings, BasicPad2DBindings, BasicQuantBindings, \
-    BasicReduceMeanBindings, BasicReduceSumBindings, BasicReluBinding, BasicReshapeBindings, BasicRQIntegerDivBinding, \
-    BasicRQSBindings, BasicRQSGELUBinding, BasicSliceBindings, BasicSoftmaxBindings, BasicTransposeBindings, \
-    DummyBinding, BasicFloorClipBindings, BasicConcatBindings
-from Deeploy.Targets.Generic.Layers import AddLayer, AveragePoolLayer, BatchNormLayer, ConvLayer, DebugPrintLayer, \
-    DequantLayer, DivLayer, GatherLayer, GELULayer, GEMMLayer, ITAMaxLayer, LayerNormLayer, MatMulLayer, MaxPoolLayer, \
-    MulLayer, PadLayer, QuantLayer, ReduceMeanLayer, ReduceSumLayer, ReluLayer, RequantShiftLayer, ReshapeLayer, \
-    RQIntegerDivLayer, RQSiGELULayer, SliceLayer, SoftmaxLayer, TransposeLayer, FloorClipLayer, ConcatLayer
-from Deeploy.Targets.Generic.Parsers import AddParser, DebugParser, DequantParser, DivParser, DummyParser, \
-    FlattenParser, GatherParser, GELUParser, GenericBatchNorm2DParser, GenericConv1DParser, GenericConv2DParser, GenericDWConv1DParser, \
-    GenericDWConv2DParser, GenericGEMMParser, GenericMaxPool2DParser, IntegerDivParser, ITAMaxParser, \
-    ITAPartialMaxParser, LayerNormParser, MatMulParser, MulParser, Pad1DParser, Pad2DParser, QuantParser, \
-    ReduceMeanParser, ReduceSumParser, ReluParser, RequantShiftParser, ReshapeParser, RQIntegerDivParser, \
-    RQSiGELUParser, SliceParser, SoftmaxParser, TransposeParser, UnsqueezeParser, iLayerNormParser, iSoftmaxParser, \
-    GenericAveragePool2DParser
-from Deeploy.Targets.Generic.Templates import AllocateTemplate, FreeTemplate, AveragePoolTemplate
-from Deeploy.Targets.Generic.Bindings import BasicAddBindings, BasicConcatBindings, BasicConv1DBinding, \
-    BasicConv2DBindings, BasicDebugPrintBindings, BasicDequantBindings, BasicDivBindings, BasicDWConv1DBinding, \
-    BasicDWConv2DBindings, BasicGatherBindings, BasicGELUBindings, BasicGEMMBindings, BasicITAPartialSoftmaxBinding, \
-    BasicITASoftmaxBinding, BasicLayerNormBindings, BasicMatMulBindings, BasicMaxPool2DBindings, BasicMulBindings, \
-    BasicPad1DBindings, BasicPad2DBindings, BasicQuantBindings, BasicReduceMeanBindings, BasicReduceSumBindings, \
-    BasicReluBinding, BasicReshapeBindings, BasicRQIntegerDivBinding, BasicRQSBindings, BasicRQSGELUBinding, \
-    BasicSliceBindings, BasicSoftmaxBindings, BasicTransposeBindings, DummyBinding
-from Deeploy.Targets.Generic.Layers import AddLayer, ConcatLayer, ConvLayer, DebugPrintLayer, DequantLayer, DivLayer, \
-    GatherLayer, GELULayer, GEMMLayer, ITAMaxLayer, LayerNormLayer, MatMulLayer, MaxPoolLayer, MulLayer, PadLayer, \
-    QuantLayer, ReduceMeanLayer, ReduceSumLayer, ReluLayer, RequantShiftLayer, ReshapeLayer, RQIntegerDivLayer, \
-    RQSiGELULayer, SliceLayer, SoftmaxLayer, TransposeLayer
-from Deeploy.Targets.Generic.Parsers import AddParser, ConcatParser, DebugParser, DequantParser, DivParser, \
-    DummyParser, FlattenParser, GatherParser, GELUParser, GenericConv1DParser, GenericConv2DParser, \
-    GenericDWConv1DParser, GenericDWConv2DParser, GenericGEMMParser, GenericMaxPool2DParser, IntegerDivParser, \
-    ITAMaxParser, ITAPartialMaxParser, LayerNormParser, MatMulParser, MulParser, Pad1DParser, Pad2DParser, \
-    QuantParser, ReduceMeanParser, ReduceSumParser, ReluParser, RequantShiftParser, ReshapeParser, RQIntegerDivParser, \
-    RQSiGELUParser, SliceParser, SoftmaxParser, TransposeParser, UnsqueezeParser, iLayerNormParser, iSoftmaxParser
+    BasicClipBindings, BasicConcatBindings, BasicConv1DBinding, BasicConv2DBindings, BasicDebugPrintBindings, \
+    BasicDequantBindings, BasicDivBindings, BasicDWConv1DBinding, BasicDWConv2DBindings, BasicFloorBindings, \
+    BasicGatherBindings, BasicGELUBindings, BasicGEMMBindings, BasicITAPartialSoftmaxBinding, BasicITASoftmaxBinding, \
+    BasicLayerNormBindings, BasicMatMulBindings, BasicMaxPool2DBindings, BasicMulBindings, BasicPad1DBindings, \
+    BasicPad2DBindings, BasicQuantBindings, BasicReduceMeanBindings, BasicReduceSumBindings, BasicReluBinding, \
+    BasicReshapeBindings, BasicRQIntegerDivBinding, BasicRQSBindings, BasicRQSGELUBinding, BasicSliceBindings, \
+    BasicSoftmaxBindings, BasicTransposeBindings, DummyBinding
+from Deeploy.Targets.Generic.Layers import AddLayer, AveragePoolLayer, BatchNormLayer, ClipLayer, ConcatLayer, \
+    ConvLayer, DebugPrintLayer, DequantLayer, DivLayer, FloorLayer, GatherLayer, GELULayer, GEMMLayer, ITAMaxLayer, \
+    LayerNormLayer, MatMulLayer, MaxPoolLayer, MulLayer, PadLayer, QuantLayer, ReduceMeanLayer, ReduceSumLayer, \
+    ReluLayer, RequantShiftLayer, ReshapeLayer, RQIntegerDivLayer, RQSiGELULayer, SliceLayer, SoftmaxLayer, \
+    TransposeLayer
+from Deeploy.Targets.Generic.Parsers import AddParser, ClipParser, ConcatParser, DebugParser, DequantParser, DivParser, \
+    DummyParser, FlattenParser, FloorParser, GatherParser, GELUParser, GenericAveragePool2DParser, GenericBatchNorm2DParser, \
+    GenericConv1DParser, GenericConv2DParser, GenericDWConv1DParser, GenericDWConv2DParser, GenericGEMMParser, \
+    GenericMaxPool2DParser, IntegerDivParser, ITAMaxParser, ITAPartialMaxParser, LayerNormParser, MatMulParser, \
+    MulParser, Pad1DParser, Pad2DParser, QuantParser, ReduceMeanParser, ReduceSumParser, ReluParser, \
+    RequantShiftParser, ReshapeParser, RQIntegerDivParser, RQSiGELUParser, SliceParser, SoftmaxParser, SqueezeParser, \
+    TransposeParser, UnsqueezeParser, iLayerNormParser, iSoftmaxParser
 from Deeploy.Targets.Generic.Templates import AllocateTemplate, FreeTemplate
 from Deeploy.Targets.Generic.TopologyOptimizationPasses.Passes import DequantPatternPass, \
     ExtractPaddingFromAveragePoolPass, ExtractPaddingFromConvPass, ExtractPaddingFromPoolPass, MatMulAddMergePass, \
-    MergeConstAddAndRequantPass, QuantPatternPass, iGELURequantMergePass, FloorClipPatternPass
+    MergeConstAddAndRequantPass, QuantPatternPass, iGELURequantMergePass
 
 AddMapper = NodeMapper(AddParser(), BasicAddBindings)
 Conv1DMapper = NodeMapper(GenericConv1DParser(), [BasicConv1DBinding])
@@ -105,24 +88,24 @@ SoftmaxMapper = NodeMapper(SoftmaxParser(), BasicSoftmaxBindings)
 iSoftmaxMapper = NodeMapper(iSoftmaxParser(), BasicSoftmaxBindings)
 TransposeMapper = NodeMapper(TransposeParser(), BasicTransposeBindings)
 UnsqueezeMapper = NodeMapper(UnsqueezeParser(), BasicReshapeBindings)
+SqueezeMapper = NodeMapper(SqueezeParser(), BasicReshapeBindings)
 QuantMapper = NodeMapper(QuantParser(), BasicQuantBindings)
 DequantMapper = NodeMapper(DequantParser(), BasicDequantBindings)
 AveragePoolMapper = NodeMapper(GenericAveragePool2DParser(), BasicAveragePool2DBindings)
 BatchNormMapper = NodeMapper(GenericBatchNorm2DParser(), BasicBatchNorm2DBindings)
-
 SliceMapper = NodeMapper(SliceParser(), BasicSliceBindings)
+FloorMapper = NodeMapper(FloorParser(), BasicFloorBindings)
+ClipMapper = NodeMapper(ClipParser(), BasicClipBindings)
+ConcatMapper = NodeMapper(ConcatParser(), BasicConcatBindings)
 
 # Dummy nodes are intended for development purposes only!
 # They should always generate compiler errors to not accidentally end up in production code
 DummyMapper = NodeMapper(DummyParser(), [DummyBinding])
 
-
-FloorClipMapper = NodeMapper(FloorClipParser(), BasicFloorClipBindings)
-ConcatMapper = NodeMapper(ConcatParser(), BasicConcatBindings)
-
 GenericMapping = {
     'Concat': ConcatLayer([ConcatMapper]),  
-    'FloorClip': FloorClipLayer([FloorClipMapper]),
+    'Floor': FloorLayer([FloorMapper]),
+    'Clip': ClipLayer([ClipMapper]),
     'Add': AddLayer([AddMapper]),
     'Conv': ConvLayer([Conv2DMapper, DWConv2DMapper, Conv1DMapper, DWConv1DMapper]),
     'Concat': ConcatLayer([ConcatMapper]),
@@ -154,7 +137,7 @@ GenericMapping = {
     'RequantShift': RequantShiftLayer([RequantShiftMapper]),
     'Reshape': ReshapeLayer([ReshapeMapper]),
     'RQIntegerDiv': RQIntegerDivLayer([RQIntegerDivMapper]),
-    'Squeeze': ReshapeLayer([UnsqueezeMapper]),
+    'Squeeze': ReshapeLayer([SqueezeMapper]),
     'Transpose': TransposeLayer([TransposeMapper]),
     'Unsqueeze': ReshapeLayer([UnsqueezeMapper]),
     'Slice': SliceLayer([SliceMapper]),
@@ -199,7 +182,114 @@ class GenericStructBuffer(StructBuffer):
 GenericOptimizer = TopologyOptimizer([
     QuantPatternPass(),
     DequantPatternPass(),
-    FloorClipPatternPass(), 
+    iGELURequantMergePass(),
+    MatMulAddMergePass(),
+    MergeConstAddAndRequantPass(),
+    ExtractPaddingFromConvPass(),
+    ExtractPaddingFromPoolPass(),
+    RemoveEmptyConvBiasPass(),
+    ExtractPaddingFromAveragePoolPass(),
+    # DebugPrintPass(r'.*[Mm]at[Mm]ul.*', position = 'after'),
+])
+
+includeList = ["DeeployBasicMath.h"]
+
+
+class GenericEngine(DeploymentEngine):
+
+    def __init__(self, name: str, Mapping = GenericMapping, initCode: str = "", includeList = includeList) -> None:
+        super().__init__(name, Mapping, initCode, includeList)
+
+
+class GenericPlatform(DeploymentPlatform):
+
+    def __init__(self,
+                 engines = [GenericEngine("Generic")],
+                 variableBuffer = GenericVariableBuffer,
+                 constantBuffer = GenericConstantBuffer,
+                 structBuffer = GenericStructBuffer,
+                 transientBuffer = GenericTransientBuffer):
+        super().__init__(engines, variableBuffer, constantBuffer, structBuffer, transientBuffer)
+GenericMapping = {
+    'Concat': ConcatLayer([ConcatMapper]),  
+    'Floor': FloorLayer([FloorMapper]),
+    'Clip': ClipLayer([ClipMapper]),
+    'Add': AddLayer([AddMapper]),
+    'Conv': ConvLayer([Conv2DMapper, DWConv2DMapper, Conv1DMapper, DWConv1DMapper]),
+    'Concat': ConcatLayer([ConcatMapper]),
+    'DebugPrint': DebugPrintLayer([DebugMapper]),
+    'Div': DivLayer([DivMapper]),
+    'Flatten': ReshapeLayer([FlattenMapper]),
+    'Gather': GatherLayer([GatherMapper]),
+    'Gemm': GEMMLayer([GEMMMapper]),
+    'iGELU': GELULayer([GELUMapper]),
+    'Gelu': GELULayer([GELUMapper]),
+    'BatchNormalization': BatchNormLayer([BatchNormMapper]),
+    'LayerNormalization': LayerNormLayer([LayerNormMapper]),
+    'iLayerNorm': LayerNormLayer([iLayerNormMapper]),
+    'IntegerDiv': DivLayer([IntegerDivMapper]),
+    'IntegerMean': ReduceMeanLayer([ReduceMeanMapper]),
+    'Softmax': SoftmaxLayer([SoftmaxMapper]),
+    'iSoftmax': SoftmaxLayer([iSoftmaxMapper]),
+    'ITAMax': ITAMaxLayer([ITAMaxMapper]),
+    'ITAPartialMax': ITAMaxLayer([ITAPartialMaxMapper]),
+    'MatMul': GEMMLayer([MatMulMapper]),
+    'MatMulInteger': MatMulLayer([MatMulMapper]),
+    'MaxPool': MaxPoolLayer([MaxPoolMapper]),
+    'Mul': MulLayer([MulMapper]),
+    'Pad': PadLayer([Pad1DMapper, Pad2DMapper]),
+    'ReduceMean': ReduceMeanLayer([ReduceMeanMapper]),
+    'ReduceSum': ReduceSumLayer([ReduceSumMapper]),
+    'Relu': ReluLayer([ReluMapper]),
+    'RequantizediGELU': RQSiGELULayer([RQGELUMapper]),
+    'RequantShift': RequantShiftLayer([RequantShiftMapper]),
+    'Reshape': ReshapeLayer([ReshapeMapper]),
+    'RQIntegerDiv': RQIntegerDivLayer([RQIntegerDivMapper]),
+    'Squeeze': ReshapeLayer([SqueezeMapper]),
+    'Transpose': TransposeLayer([TransposeMapper]),
+    'Unsqueeze': ReshapeLayer([UnsqueezeMapper]),
+    'Slice': SliceLayer([SliceMapper]),
+    'AveragePool': AveragePoolLayer([AveragePoolMapper]),
+    'Quant': QuantLayer([QuantMapper]),
+    'Dequant': DequantLayer([DequantMapper]),
+    # # For example, you can use the DummpyMapper, in case you want to test
+    # # deployment or optimizations with GlobalAveragePool nodes but did not yet
+    # # implement the corresponding kernel
+    # 'GlobalAveragePool': ConvLayer([DummyMapper]),
+}
+
+
+class GenericVariableBuffer(VariableBuffer):
+
+    initTemplate = AllocateTemplate.referenceInitTemplate
+    allocTemplate = AllocateTemplate.referenceAllocateTemplate
+    deallocTemplate = FreeTemplate.referenceLocalTemplate
+
+
+class GenericTransientBuffer(TransientBuffer):
+
+    initTemplate = AllocateTemplate.referenceInitTemplate
+    allocTemplate = AllocateTemplate.referenceAllocateTemplate
+    deallocTemplate = FreeTemplate.referenceLocalTemplate
+
+
+class GenericConstantBuffer(ConstantBuffer):
+
+    initTemplate = AllocateTemplate.referenceGlobalInitTemplate
+    allocTemplate = AllocateTemplate.referenceGlobalAllocateTemplate
+    deallocTemplate = FreeTemplate.referenceGlobalTemplate
+
+
+class GenericStructBuffer(StructBuffer):
+
+    initTemplate = AllocateTemplate.referenceStructInitTemplate
+    allocTemplate = AllocateTemplate.referenceStructAllocateTemplate
+    deallocTemplate = NodeTemplate("")
+
+
+GenericOptimizer = TopologyOptimizer([
+    QuantPatternPass(),
+    DequantPatternPass(),
     iGELURequantMergePass(),
     MatMulAddMergePass(),
     MergeConstAddAndRequantPass(),

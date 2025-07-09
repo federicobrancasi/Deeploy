@@ -987,6 +987,54 @@ class UnsqueezeParser(NodeParser):
         return ctxt, True
 
 
+class SqueezeParser(NodeParser):
+
+    def __init__(self):
+        super().__init__()
+
+    def parseNode(self, node: gs.Node) -> (bool):
+        
+        # FBRANCASI: Support both old and new ONNX opset format for squeeze operation:
+        #               - Old: axes as attribute, 1 input (data)
+        #               - New: axes as input tensor, 2 inputs (data + axes) (opset 17)
+        ret = all([len(node.inputs) >= 1, len(node.inputs) <= 2, len(node.outputs) == 1])
+        
+        if ret:
+            if len(node.inputs) == 2: 
+                axes_input = node.inputs[1]
+                if hasattr(axes_input, 'values'):
+                    self.operatorRepresentation['axes'] = axes_input.values.tolist()
+                else:
+                    self.operatorRepresentation['axes'] = None
+            elif 'axes' in node.attrs: 
+                self.operatorRepresentation['axes'] = node.attrs['axes']
+            else: 
+                self.operatorRepresentation['axes'] = None
+        
+        return ret
+
+    def parseNodeCtxt(self,
+                      ctxt: NetworkContext,
+                      node: gs.Node,
+                      channels_first: bool = True) -> Tuple[NetworkContext, bool]:
+
+        inputs = ['data_in']
+        outputs = ['data_out']
+
+        for idx, inputNode in enumerate(node.inputs[:1]):  
+            self.operatorRepresentation[inputs[idx]] = ctxt.lookup(inputNode.name).name
+        for idx, outputNode in enumerate(node.outputs):
+            self.operatorRepresentation[outputs[idx]] = ctxt.lookup(outputNode.name).name
+
+        if len(node.inputs) == 2 and self.operatorRepresentation.get('axes') is None:
+            axes_input = node.inputs[1]
+            axes_buffer = ctxt.lookup(axes_input.name)
+            if hasattr(axes_buffer, 'values'):
+                self.operatorRepresentation['axes'] = axes_buffer.values.tolist()
+
+        return ctxt, True
+
+
 class ReluParser(NodeParser):
 
     def __init__(self):
@@ -2751,3 +2799,113 @@ class FloorClipParser(NodeParser):
         self.operatorRepresentation['size'] = np.prod(data_in.shape)
 
         return ctxt, True
+
+
+class FloorParser(NodeParser):
+
+    def __init__(self):
+        super().__init__()
+
+    def parseNode(self, node: gs.Node) -> bool:
+        ret = all([
+            len(node.inputs) == 1,
+            len(node.outputs) == 1
+        ])
+        return ret
+
+    def parseNodeCtxt(self,
+                      ctxt: NetworkContext,
+                      node: gs.Node,
+                      channels_first: bool = True) -> Tuple[NetworkContext, bool]:
+
+        data_in = ctxt.lookup(node.inputs[0].name)
+        data_out = ctxt.lookup(node.outputs[0].name)
+
+        self.operatorRepresentation["data_in"] = data_in.name
+        self.operatorRepresentation["data_out"] = data_out.name
+        self.operatorRepresentation["size"] = np.prod(data_in.shape)
+
+        return ctxt, True
+
+
+class ClipParser(NodeParser):
+
+    def __init__(self):
+        super().__init__()
+
+    def parseNode(self, node: gs.Node) -> bool:
+        ret = all([
+            len(node.inputs) >= 1,  # At least input tensor
+            len(node.inputs) <= 3,  # Input, optional min, optional max
+            len(node.outputs) == 1
+        ])
+
+        if ret:
+            # Default values for int8 quantization
+            self.operatorRepresentation["min_val"] = -128.0
+            self.operatorRepresentation["max_val"] = 127.0
+
+        return ret
+
+    def parseNodeCtxt(self,
+                      ctxt: NetworkContext,
+                      node: gs.Node,
+                      channels_first: bool = True) -> Tuple[NetworkContext, bool]:
+
+        data_in = ctxt.lookup(node.inputs[0].name)
+        data_out = ctxt.lookup(node.outputs[0].name)
+
+        self.operatorRepresentation["data_in"] = data_in.name
+        self.operatorRepresentation["data_out"] = data_out.name
+        self.operatorRepresentation["size"] = np.prod(data_in.shape)
+
+        # Try to extract min/max values from constant inputs
+        min_val = -128.0  # Default
+        max_val = 127.0   # Default
+        
+        try:
+            if len(node.inputs) >= 2:
+                min_buffer = ctxt.lookup(node.inputs[1].name)
+                if hasattr(min_buffer, 'values') and min_buffer.values is not None:
+                    min_val = float(min_buffer.values.item())
+            
+            if len(node.inputs) >= 3:
+                max_buffer = ctxt.lookup(node.inputs[2].name)
+                if hasattr(max_buffer, 'values') and max_buffer.values is not None:
+                    max_val = float(max_buffer.values.item())
+        except:
+            # Fall back to defaults if extraction fails
+            pass
+        
+        self.operatorRepresentation["min_val"] = min_val
+        self.operatorRepresentation["max_val"] = max_val
+
+        return ctxt, True
+
+
+class AbsParser(NodeParser):
+
+    def __init__(self):
+        super().__init__()
+
+    def parseNode(self, node: gs.Node) -> bool:
+        ret = all([
+            len(node.inputs) == 1,
+            len(node.outputs) == 1
+        ])
+        return ret
+
+    def parseNodeCtxt(self,
+                      ctxt: NetworkContext,
+                      node: gs.Node,
+                      channels_first: bool = True) -> Tuple[NetworkContext, bool]:
+
+        data_in = ctxt.lookup(node.inputs[0].name)
+        data_out = ctxt.lookup(node.outputs[0].name)
+
+        self.operatorRepresentation["data_in"] = data_in.name
+        self.operatorRepresentation["data_out"] = data_out.name
+        self.operatorRepresentation["size"] = np.prod(data_in.shape)
+
+        return ctxt, True
+
