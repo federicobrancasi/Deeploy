@@ -42,7 +42,6 @@ import numpy as np
 import onnx
 import onnx_graphsurgeon as gs
 from mako.template import Template
-from onnx.external_data_helper import convert_model_to_external_data
 from ortools.constraint_solver.pywrapcp import IntVar
 
 from .AbstractDataTypes import BaseType, FloatImmediate, IntegerImmediate, Pointer, PointerClass, Struct, VoidType
