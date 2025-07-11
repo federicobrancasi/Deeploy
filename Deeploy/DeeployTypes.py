@@ -1974,11 +1974,6 @@ class ONNXLayer():
                 self.discardedMappers.add(mapper)
                 continue
 
-            newCtxt, typeCheckSuccess = mapper.typeCheck(newCtxt, self.node)
-            if not typeCheckSuccess:
-                self.discardedMappers.add(mapper)
-                continue
-
             self.mapper.parser.operatorRepresentation['nodeOp'] = self.node.op
             self.mapper.parser.operatorRepresentation['nodeName'] = self.node.name
 
