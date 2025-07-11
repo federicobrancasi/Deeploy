@@ -116,7 +116,7 @@ jobs:
         testBatchNorm
         testResnet18
         testResnet18TrueQuantized
-        
+        CCTTrueQuantized
 
   generic-models:
     uses: ./.github/workflows/TestRunnerGeneric.yml

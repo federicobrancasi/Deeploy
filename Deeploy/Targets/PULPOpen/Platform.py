@@ -34,7 +34,7 @@ from Deeploy.MemoryLevelExtension.MemoryLevels import MemoryHierarchy, MemoryLev
 from Deeploy.MemoryLevelExtension.NetworkDeployers.MemoryLevelDeployer import MemoryPlatform, MemoryPlatformWrapper
 from Deeploy.Targets.Generic.Bindings import BasicGEMMBindings, BasicPad1DBindings, BasicPad2DBindings, \
     BasicRQIntegerDivBinding
-from Deeploy.Targets.Generic.Layers import AddLayer, AveragePoolLayer, ConcatLayer, ConvLayer, GatherLayer, GELULayer, \
+from Deeploy.Targets.Generic.Layers import AddLayer, AveragePoolLayer, ConcatLayer, ConvLayer, DequantLayer, GatherLayer, GELULayer, \
     GEMMLayer, LayerNormLayer, MatMulLayer, MaxPoolLayer, MulLayer, PadLayer, QuantLayer, ReduceMeanLayer, \
     ReduceSumLayer, ReluLayer, RequantShiftLayer, ReshapeLayer, RQIntegerDivLayer, RQSiGELULayer, RQSiHardswishLayer, \
     SGDLayer, SliceLayer, SoftmaxCrossEntropyLossGradLayer, SoftmaxCrossEntropyLossLayer, SoftmaxGradLayer, \
@@ -164,7 +164,7 @@ PULPMapping = {
     'iHardswish': iHardswishLayer([iHardswishMapper]),
     'RequantizediHardswish': RQSiHardswishLayer([RQSiHardswishMapper]),
     'Quant': QuantLayer([QuantMapper]),
-    'Dequant': QuantLayer([DequantMapper]),
+    'Dequant': DequantLayer([DequantMapper]),
     'SoftmaxGrad': SoftmaxGradLayer([SoftmaxGradMapper]),
     'SoftmaxCrossEntropyLoss': SoftmaxCrossEntropyLossLayer([SoftmaxCrossEntropyLossMapper]),
     'SoftmaxCrossEntropyLossGrad': SoftmaxCrossEntropyLossGradLayer([SoftmaxCrossEntropyLossGradMapper]),

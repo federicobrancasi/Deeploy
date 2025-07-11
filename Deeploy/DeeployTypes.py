@@ -3090,7 +3090,7 @@ class NetworkContainer():
                     if hasattr(gObject._type, "referencedType"):
                         tensor.doc_string += f"Reference Type: {gObject._type.referencedType.typeName}"
 
-        convert_model_to_external_data(model, location = fileName + _dataExtension)
+        # convert_model_to_external_data(model, location = fileName + _dataExtension)
         onnx.save(model, absoluteOnnxPath)
 
     def exportDeeployState(self, folderPath: str, fileName: str):
