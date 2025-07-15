@@ -1026,11 +1026,13 @@ class SqueezeParser(NodeParser):
         for idx, outputNode in enumerate(node.outputs):
             self.operatorRepresentation[outputs[idx]] = ctxt.lookup(outputNode.name).name
 
-        if len(node.inputs) == 2 and self.operatorRepresentation.get('axes') is None:
+        if len(node.inputs) == 2:
             axes_input = node.inputs[1]
             axes_buffer = ctxt.lookup(axes_input.name)
-            if hasattr(axes_buffer, 'values'):
-                self.operatorRepresentation['axes'] = axes_buffer.values.tolist()
+            axes_buffer._live = False
+            axes_buffer._deploy = False
+            if self.operatorRepresentation.get("axes") is None and hasattr(axes_buffer, "values"):
+                self.operatorRepresentation["axes"] = axes_buffer.values.tolist()
 
         return ctxt, True
 

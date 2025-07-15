@@ -28,7 +28,7 @@ import copy
 
 from Deeploy.CommonExtensions.CodeTransformationPasses.MemoryAllocation import MemoryPassthroughGeneration
 from Deeploy.DeeployTypes import CodeTransformation
-from Deeploy.Targets.Generic.Bindings import BasicReshapeBindings
+from Deeploy.Targets.Generic.Bindings import BasicReshapeBindings, BasicGEMMBindings
 from Deeploy.Targets.Generic.TileConstraints.AddTileConstraint import AddTileConstraint
 from Deeploy.Targets.Generic.TileConstraints.ConcatTileConstraint import ConcatTileConstraint
 from Deeploy.Targets.Generic.TileConstraints.DequantTileConstraint import DequantTileConstraint
@@ -42,7 +42,7 @@ from Deeploy.Targets.Generic.TileConstraints.RQSiHardswishTileConstraint import 
 from Deeploy.Targets.Generic.TileConstraints.TransposeTileConstraint import TransposeTileConstraint
 from Deeploy.Targets.Generic.TileConstraints.UnaryTileConstraint import UnaryTileConstraint
 from Deeploy.Targets.Generic.TileConstraints.UntiledTileConstraint import UntiledTileConstraint
-from Deeploy.Targets.PULPOpen.Bindings import PULPAddBindings, PULPConcatBindings, PULPDequantBindings, \
+from Deeploy.Targets.PULPOpen.Bindings import PULPAddBindings, PULPConcatBindings, PULPDequantBindings, PULPDequantConv2DBindings, \
     PULPFloatConv2DBindings, PULPFloatGELUBinding, PULPFloatGEMMBindings, PULPGatherBindings, PULPiHardswishBindings, \
     PULPiRMSNormBindings, PULPiRQSGELUBindings, PULPLayernormBinding, PULPMatMulBindings, PULPMaxPool2DBindings, \
     PULPMulBindings, PULPQuantBindings, PULPReduceSumBindings, PULPReluBinding, PULPRQAddBindings, PULPRQSBindings, \
@@ -74,10 +74,16 @@ PULPRQSDWConv2DTilingReadyBindings = TilingReadyNodeBindings(nodeBindings = PULP
 PULPConv2DTilingReadyBindings = TilingReadyNodeBindings(nodeBindings = PULPFloatConv2DBindings,
                                                         tileConstraint = Conv2DTileConstraint())
 
+PULPDequantConv2DTilingReadyBindings = TilingReadyNodeBindings(nodeBindings = PULPDequantConv2DBindings,
+                                                        tileConstraint = Conv2DTileConstraint())
+
 PULPRQSGEMMTilingReadyBindings = TilingReadyNodeBindings(nodeBindings = PULPRQSGEMMBindings,
                                                          tileConstraint = GEMMTileConstraint())
 
 PULPFPGEMMTilingReadyBindings = TilingReadyNodeBindings(nodeBindings = PULPFloatGEMMBindings,
+                                                        tileConstraint = FloatGEMMTileConstraint())
+
+PULPDequantGEMMTilingReadyBindings = TilingReadyNodeBindings(nodeBindings = BasicGEMMBindings,
                                                         tileConstraint = FloatGEMMTileConstraint())
 
 PULPRQSMatrixVecTilingReadyBindings = TilingReadyNodeBindings(nodeBindings = PULPRQSMatrixVecBindings,

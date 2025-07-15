@@ -43,7 +43,7 @@ from Deeploy.Targets.Generic.Parsers import AddParser, ConcatParser, DequantPars
     GELUParser, GEMMParser, GenericAveragePool2DParser, LayerNormParser, MatMulParser, MaxPool2DParser, MulParser, \
     Pad1DParser, Pad2DParser, QuantParser, ReduceMeanParser, ReduceSumParser, ReluParser, RequantShiftParser, \
     ReshapeParser, RQAddParser, RQIntegerDivParser, RQSiGELUParser, RQSiHardswishParser, SGDParser, SliceParser, \
-    SoftmaxCrossEntropyLossGradParser, SoftmaxCrossEntropyLossParser, SoftmaxGradParser, SoftmaxParser, \
+    SoftmaxCrossEntropyLossGradParser, SoftmaxCrossEntropyLossParser, SoftmaxGradParser, SoftmaxParser, SqueezeParser, \
     TransposeParser, UniformRequantShiftParser, UnsqueezeParser, iHardswishParser, iRMSNormParser, iSoftmaxParser
 from Deeploy.Targets.Generic.Templates import AllocateTemplate as BasicAllocateTemplate
 from Deeploy.Targets.Generic.TopologyOptimizationPasses.Passes import DequantPatternPass, \
@@ -68,7 +68,8 @@ from Deeploy.Targets.PULPOpen.Tiler import PULPAddTilingReadyBindings, PULPConca
     PULPRQSMatrixVecTilingReadyBindings, PULPRQSTallGEMMTilingReadyBindings, PULPRQSTilingReadyBindings, \
     PULPSGDTilingReadyBindings, PULPSoftmaxCrossEntropyGradTilingReadyBindings, \
     PULPSoftmaxCrossEntropyTilingReadyBindings, PULPSoftmaxGradTilingReadyBindings, PULPSoftmaxTilingReadyBindings, \
-    PULPTransposeTilingReadyBindings, PULPUniformRQSTilingReadyBindings
+    PULPTransposeTilingReadyBindings, PULPUniformRQSTilingReadyBindings, PULPDequantGEMMTilingReadyBindings, \
+    PULPDequantConv2DTilingReadyBindings
 from Deeploy.Targets.PULPOpen.TopologyOptimizationPasses.Passes import PULPAddRequantMergePass, \
     PULPConvRequantMergePass, PULPGEMMRequantMergePass, PULPMatMulRequantMergePass
 
@@ -81,6 +82,7 @@ MulMapper = NodeMapper(MulParser(), PULPMulTilingReadyBindings)
 Pad1DMapper = NodeMapper(Pad1DParser(), BasicPad1DBindings)
 Pad2DMapper = NodeMapper(Pad2DParser(), BasicPad2DBindings)
 ReshapeMapper = NodeMapper(ReshapeParser(), PULPFlattenTilingReadyBindings)
+SqueezeMapper = NodeMapper(SqueezeParser(), PULPFlattenTilingReadyBindings)
 TransposeMapper = NodeMapper(TransposeParser(), PULPTransposeTilingReadyBindings)
 UnsqueezeMapper = NodeMapper(UnsqueezeParser(), PULPFlattenTilingReadyBindings)
 
@@ -122,19 +124,19 @@ SoftmaxCrossEntropyLossMapper = NodeMapper(SoftmaxCrossEntropyLossParser(), PULP
 SoftmaxCrossEntropyLossGradMapper = NodeMapper(SoftmaxCrossEntropyLossGradParser(),
                                                PULPSoftmaxCrossEntropyGradTilingReadyBindings)
 SGDMapper = NodeMapper(SGDParser(), PULPSGDTilingReadyBindings)
+AveragePoolMapper = NodeMapper(GenericAveragePool2DParser(), PULPAveragePool2DBindings)
 QuantMapper = NodeMapper(QuantParser(), PULPQuantTilingReadyBindings)
 DequantMapper = NodeMapper(DequantParser(), PULPDequantTilingReadyBindings)
 
-GEMMDequantMapper = NodeMapper(GEMMParser(), BasicGEMMBindings)
-Conv2DDequantMapper = NodeMapper(PULPDequantConv2DParser(), PULPDequantConv2DBindings)
+GEMMDequantMapper = NodeMapper(GEMMParser(), PULPDequantGEMMTilingReadyBindings)
+Conv2DDequantMapper = NodeMapper(PULPDequantConv2DParser(), PULPDequantConv2DTilingReadyBindings) 
 
-AveragePoolMapper = NodeMapper(GenericAveragePool2DParser(), PULPAveragePool2DBindings)
 
 PULPMapping = {
     'Conv': ConvLayer([Conv2DDequantMapper, FPConv2DWithBiasMapper, FPConv2DMapper]),
     'RequantizedConv': PULPRQSConvLayer([Conv2DMapper, DWConv2DMapper, Conv1DMapper, DWConv1DMapper]),
     'RequantizedGemm': PULPRQSGEMMLayer([MatrixVecMapper, TallGEMMMapper, GEMMMapper]),
-    'Gemm': GEMMLayer([FloatGEMMMapper, GEMMDequantMapper]),
+    'Gemm': GEMMLayer([GEMMDequantMapper, FloatGEMMMapper]), # FBRANCASI: Changed Order of Mappers to make it work (Bug, Implement Backtracking of Mappers)
     'Gelu': GELULayer([GELUMapper]),
     'LayerNormalization': LayerNormLayer([LayerNormMapper]),
     'MaxPool': MaxPoolLayer([MaxPool2DMapper]),
@@ -154,7 +156,7 @@ PULPMapping = {
     'Pad': PadLayer([Pad1DMapper, Pad2DMapper]),
     'Relu': ReluLayer([ReluMapper]),
     'Reshape': ReshapeLayer([ReshapeMapper]),
-    'Squeeze': ReshapeLayer([UnsqueezeMapper]),
+    'Squeeze': ReshapeLayer([SqueezeMapper]),
     'Transpose': TransposeLayer([TransposeMapper]),
     'Unsqueeze': ReshapeLayer([UnsqueezeMapper]),
     'Slice': SliceLayer([SliceMapper]),
