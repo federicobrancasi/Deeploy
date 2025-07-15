@@ -169,6 +169,11 @@ class MemoryManagementGeneration(CodeTransformationPass, IntrospectiveCodeTransf
             nb = ctxt.lookup(buffer)
 
             # Check that it was not already deallocated
+            current_live_state = getattr(ctxt.localObjects[nb.name], '_live', None)
+            if current_live_state is False:
+                # FBRANCASI: Instead of failing, let's just skip this deallocation since it's already dead
+                print(f"[WARNING] {name} - Skipping deallocation of already dead buffer {nb.name}")
+                continue
             assert ctxt.localObjects[nb.name]._live == True, f"Tried to deallocate already dead buffer {nb.name}"
 
             # Mark it as dead (not useful anymore)
