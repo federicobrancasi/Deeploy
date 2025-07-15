@@ -32,8 +32,7 @@ from Deeploy.DeeployTypes import ConstantBuffer, DeploymentEngine, DeploymentPla
     NodeTemplate, StructBuffer, TopologyOptimizer, TransientBuffer, VariableBuffer
 from Deeploy.MemoryLevelExtension.MemoryLevels import MemoryHierarchy, MemoryLevel
 from Deeploy.MemoryLevelExtension.NetworkDeployers.MemoryLevelDeployer import MemoryPlatform, MemoryPlatformWrapper
-from Deeploy.Targets.Generic.Bindings import BasicGEMMBindings, BasicPad1DBindings, BasicPad2DBindings, \
-    BasicRQIntegerDivBinding
+from Deeploy.Targets.Generic.Bindings import BasicPad1DBindings, BasicPad2DBindings, BasicRQIntegerDivBinding
 from Deeploy.Targets.Generic.Layers import AddLayer, AveragePoolLayer, ConcatLayer, ConvLayer, DequantLayer, \
     GatherLayer, GELULayer, GEMMLayer, LayerNormLayer, MatMulLayer, MaxPoolLayer, MulLayer, PadLayer, QuantLayer, \
     ReduceMeanLayer, ReduceSumLayer, ReluLayer, RequantShiftLayer, ReshapeLayer, RQIntegerDivLayer, RQSiGELULayer, \
@@ -50,26 +49,26 @@ from Deeploy.Targets.Generic.TopologyOptimizationPasses.Passes import DequantPat
     ExtractPaddingFromAveragePoolPass, IntegerDivRequantMergePass, MergeConstAddAndRequantPass, \
     MergeTrueIntegerDivRequantShiftPass, QuantPatternPass, RQSSplitPass, SkipEmptyConcatPass, SkipUnityRequantPass, \
     iGELURequantMergePass, iHardswishRequantMergePass
-from Deeploy.Targets.PULPOpen.Bindings import PULPAveragePool2DBindings, PULPConv1DBinding, PULPDequantConv2DBindings, \
-    PULPDMASliceBindings, PULPDWConv1DBinding, PULPReduceMeanBindings
+from Deeploy.Targets.PULPOpen.Bindings import PULPAveragePool2DBindings, PULPConv1DBinding, PULPDMASliceBindings, \
+    PULPDWConv1DBinding, PULPReduceMeanBindings
 from Deeploy.Targets.PULPOpen.Layers import PULPRQSConvLayer, PULPRQSGEMMLayer
-from Deeploy.Targets.PULPOpen.Parsers import PULPConv1DParser, PULPConv2DParser, PULPDequantConv2DParser, \
-    PULPDWConv1DParser, PULPDWConv2DParser, PULPFPConv2DParser, PULPFPConv2DWithBiasParser, PULPGEMMParser, \
-    PULPMatrixVecParser, PULPTallGEMMParser
+from Deeploy.Targets.PULPOpen.Parsers import PULPConv1DParser, PULPConv2DParser, PULPDWConv1DParser, \
+    PULPDWConv2DParser, PULPFPConv2DParser, PULPFPConv2DWithBiasParser, PULPGEMMParser, PULPMatrixVecParser, \
+    PULPTallGEMMParser, QuantizedPULPConv2DParser
 from Deeploy.Targets.PULPOpen.Templates import AllocateTemplate, FreeTemplate
 from Deeploy.Targets.PULPOpen.Tiler import PULPAddTilingReadyBindings, PULPConcatTilingReadyBindings, \
     PULPConv2DTilingReadyBindings, PULPDequantTilingReadyBindings, PULPFlattenTilingReadyBindings, \
     PULPFPGELUTilingReadyBindings, PULPFPGEMMTilingReadyBindings, PULPGatherTilingReadyBindings, \
     PULPiHardswishTilingReadyBindings, PULPiRMSNormTilingReadyBindings, PULPiRQSGELUTilingReadyBindings, \
     PULPLayernormTilingReadyBindings, PULPMatMulTilingReadyBindings, PULPMaxPool2DTilingReadyBindings, \
-    PULPMulTilingReadyBindings, PULPQuantTilingReadyBindings, PULPReduceSumTilingReadyBindings, \
-    PULPReluTilingReadyBindings, PULPRQAddTilingReadyBindings, PULPRQSConv2DTilingReadyBindings, \
-    PULPRQSDWConv2DTilingReadyBindings, PULPRQSGEMMTilingReadyBindings, PULPRQSiHardswishTilingReadyBindings, \
-    PULPRQSMatrixVecTilingReadyBindings, PULPRQSTallGEMMTilingReadyBindings, PULPRQSTilingReadyBindings, \
-    PULPSGDTilingReadyBindings, PULPSoftmaxCrossEntropyGradTilingReadyBindings, \
-    PULPSoftmaxCrossEntropyTilingReadyBindings, PULPSoftmaxGradTilingReadyBindings, PULPSoftmaxTilingReadyBindings, \
-    PULPTransposeTilingReadyBindings, PULPUniformRQSTilingReadyBindings, PULPDequantGEMMTilingReadyBindings, \
-    PULPDequantConv2DTilingReadyBindings
+    PULPMulTilingReadyBindings, PULPQuantizedConv2DTilingReadyBindings, PULPQuantizedGEMMTilingReadyBindings, \
+    PULPQuantTilingReadyBindings, PULPReduceSumTilingReadyBindings, PULPReluTilingReadyBindings, \
+    PULPRQAddTilingReadyBindings, PULPRQSConv2DTilingReadyBindings, PULPRQSDWConv2DTilingReadyBindings, \
+    PULPRQSGEMMTilingReadyBindings, PULPRQSiHardswishTilingReadyBindings, PULPRQSMatrixVecTilingReadyBindings, \
+    PULPRQSTallGEMMTilingReadyBindings, PULPRQSTilingReadyBindings, PULPSGDTilingReadyBindings, \
+    PULPSoftmaxCrossEntropyGradTilingReadyBindings, PULPSoftmaxCrossEntropyTilingReadyBindings, \
+    PULPSoftmaxGradTilingReadyBindings, PULPSoftmaxTilingReadyBindings, PULPTransposeTilingReadyBindings, \
+    PULPUniformRQSTilingReadyBindings
 from Deeploy.Targets.PULPOpen.TopologyOptimizationPasses.Passes import PULPAddRequantMergePass, \
     PULPConvRequantMergePass, PULPGEMMRequantMergePass, PULPMatMulRequantMergePass
 
@@ -128,15 +127,15 @@ AveragePoolMapper = NodeMapper(GenericAveragePool2DParser(), PULPAveragePool2DBi
 QuantMapper = NodeMapper(QuantParser(), PULPQuantTilingReadyBindings)
 DequantMapper = NodeMapper(DequantParser(), PULPDequantTilingReadyBindings)
 
-GEMMDequantMapper = NodeMapper(GEMMParser(), PULPDequantGEMMTilingReadyBindings)
-Conv2DDequantMapper = NodeMapper(PULPDequantConv2DParser(), PULPDequantConv2DTilingReadyBindings) 
-
+QuantizedGEMMMapper = NodeMapper(GEMMParser(), PULPQuantizedGEMMTilingReadyBindings)
+QuantizedConv2DMapper = NodeMapper(QuantizedPULPConv2DParser(), PULPQuantizedConv2DTilingReadyBindings)
 
 PULPMapping = {
-    'Conv': ConvLayer([Conv2DDequantMapper, FPConv2DWithBiasMapper, FPConv2DMapper]),
+    'Conv': ConvLayer([QuantizedConv2DMapper, FPConv2DWithBiasMapper, FPConv2DMapper]),
     'RequantizedConv': PULPRQSConvLayer([Conv2DMapper, DWConv2DMapper, Conv1DMapper, DWConv1DMapper]),
     'RequantizedGemm': PULPRQSGEMMLayer([MatrixVecMapper, TallGEMMMapper, GEMMMapper]),
-    'Gemm': GEMMLayer([GEMMDequantMapper, FloatGEMMMapper]), # FBRANCASI: Changed Order of Mappers to make it work (Bug, Implement Backtracking of Mappers)
+    'Gemm': GEMMLayer([QuantizedGEMMMapper, FloatGEMMMapper]
+                     ),  # FBRANCASI: Changed Order of Mappers to make it work (Bug, Implement Backtracking of Mappers)
     'Gelu': GELULayer([GELUMapper]),
     'LayerNormalization': LayerNormLayer([LayerNormMapper]),
     'MaxPool': MaxPoolLayer([MaxPool2DMapper]),

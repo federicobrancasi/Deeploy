@@ -454,7 +454,7 @@ class PULPTallGEMMParser(PULPGEMMParser):
         return newCtxt, True
 
 
-class PULPDequantConv2DParser(Conv2DParser):
+class QuantizedPULPConv2DParser(Conv2DParser):
 
     def __init__(self, noBiasHoisting = True):
         super().__init__(noBiasHoisting)
