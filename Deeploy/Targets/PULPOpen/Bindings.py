@@ -38,7 +38,7 @@ from Deeploy.DeeployTypes import CodeTransformation, NodeBinding, NodeTemplate
 from Deeploy.FutureExtension.Bindings.AutoFutureBinding import AutoFutureBinding
 from Deeploy.FutureExtension.CodeTransformationPasses.FutureCodeTransformation import FutureGeneration
 from Deeploy.Targets.Generic.Templates import AddTemplate, AveragePoolTemplate, ConcatTemplate, DequantTemplate, \
-    FloatReduceSumTemplate, GatherTemplate, QuantTemplate, RQSiGELUTemplate, iHardswishTemplate
+    FloatReduceSumTemplate, GatherTemplate, QuantTemplate, RQSiGELUTemplate, iHardswishTemplate, GemmTemplate
 from Deeploy.Targets.Generic.TypeCheckers import AddChecker, AveragePoolChecker, ConcatChecker, ConvChecker, \
     DequantChecker, GatherChecker, GELUChecker, GEMMChecker, HardswishChecker, LayerNormChecker, MatMulChecker, \
     MulChecker, QuantChecker, ReduceMeanChecker, ReluChecker, RQAddChecker, RQHardswishChecker, SGDChecker, \
@@ -415,6 +415,12 @@ BasicDequantBindings = [
     NodeBinding(DequantChecker([PointerClass(int32_t)], [PointerClass(float32_t)]), DequantTemplate.referenceTemplate,
                 ForkTransformer),
 ]
+
+PULPQuantizedGEMMBindings = [
+    NodeBinding(
+        GEMMChecker([PointerClass(int8_t), PointerClass(int8_t),
+                     PointerClass(int32_t)], [PointerClass(int32_t)]), GemmTemplate.referenceTemplate, ForkTransformer)
+] 
 
 PULPQuantizedConv2DBindings = [
     NodeBinding(
