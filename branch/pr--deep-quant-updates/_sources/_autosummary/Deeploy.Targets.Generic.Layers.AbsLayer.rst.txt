@@ -1,0 +1,43 @@
+Deeploy.Targets.Generic.Layers.AbsLayer
+=======================================
+
+.. currentmodule:: Deeploy.Targets.Generic.Layers
+
+.. autoclass:: AbsLayer
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+   
+   
+   .. rubric:: Methods
+   .. automethod:: __init__
+
+   .. autosummary::
+   
+      ~AbsLayer.__init__
+      ~AbsLayer.bind
+      ~AbsLayer.broadcast
+      ~AbsLayer.codeTransform
+      ~AbsLayer.computeOps
+      ~AbsLayer.computeShapes
+      ~AbsLayer.discardCurrentMapper
+      ~AbsLayer.generate
+      ~AbsLayer.parse
+      ~AbsLayer.resetDiscardedMappers
+      ~AbsLayer.typeCheck
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~AbsLayer.maps
+      ~AbsLayer.mapper
+      ~AbsLayer.discardedMappers
+      ~AbsLayer.node
+   
+   

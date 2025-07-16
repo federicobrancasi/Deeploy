@@ -1,0 +1,36 @@
+Deeploy.Targets.Generic.TypeCheckers.FloorChecker
+=================================================
+
+.. currentmodule:: Deeploy.Targets.Generic.TypeCheckers
+
+.. autoclass:: FloorChecker
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+   
+   
+   .. rubric:: Methods
+   .. automethod:: __init__
+
+   .. autosummary::
+   
+      ~FloorChecker.__init__
+      ~FloorChecker.annotateDict
+      ~FloorChecker.checkOutputType
+      ~FloorChecker.typeCheck
+      ~FloorChecker.typeCheckNodeInputs
+      ~FloorChecker.typeInferGlobalCtxt
+      ~FloorChecker.typeInferOutput
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~FloorChecker.typeDict
+   
+   

@@ -1,0 +1,43 @@
+Deeploy.Targets.Generic.Layers.BatchNormLayer
+=============================================
+
+.. currentmodule:: Deeploy.Targets.Generic.Layers
+
+.. autoclass:: BatchNormLayer
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+   
+   
+   .. rubric:: Methods
+   .. automethod:: __init__
+
+   .. autosummary::
+   
+      ~BatchNormLayer.__init__
+      ~BatchNormLayer.bind
+      ~BatchNormLayer.broadcast
+      ~BatchNormLayer.codeTransform
+      ~BatchNormLayer.computeOps
+      ~BatchNormLayer.computeShapes
+      ~BatchNormLayer.discardCurrentMapper
+      ~BatchNormLayer.generate
+      ~BatchNormLayer.parse
+      ~BatchNormLayer.resetDiscardedMappers
+      ~BatchNormLayer.typeCheck
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~BatchNormLayer.maps
+      ~BatchNormLayer.mapper
+      ~BatchNormLayer.discardedMappers
+      ~BatchNormLayer.node
+   
+   

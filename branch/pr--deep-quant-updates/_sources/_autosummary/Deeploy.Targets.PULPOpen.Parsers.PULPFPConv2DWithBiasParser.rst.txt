@@ -1,0 +1,35 @@
+Deeploy.Targets.PULPOpen.Parsers.PULPFPConv2DWithBiasParser
+===========================================================
+
+.. currentmodule:: Deeploy.Targets.PULPOpen.Parsers
+
+.. autoclass:: PULPFPConv2DWithBiasParser
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+   
+   
+   .. rubric:: Methods
+   .. automethod:: __init__
+
+   .. autosummary::
+   
+      ~PULPFPConv2DWithBiasParser.__init__
+      ~PULPFPConv2DWithBiasParser.parse
+      ~PULPFPConv2DWithBiasParser.parseInputs
+      ~PULPFPConv2DWithBiasParser.parseNode
+      ~PULPFPConv2DWithBiasParser.parseNodeCtxt
+      ~PULPFPConv2DWithBiasParser.parseOutputs
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~PULPFPConv2DWithBiasParser.operatorRepresentation
+   
+   

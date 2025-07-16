@@ -1,0 +1,35 @@
+Deeploy.Targets.PULPOpen.Parsers.QuantizedPULPConv2DParser
+==========================================================
+
+.. currentmodule:: Deeploy.Targets.PULPOpen.Parsers
+
+.. autoclass:: QuantizedPULPConv2DParser
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+   
+   
+   .. rubric:: Methods
+   .. automethod:: __init__
+
+   .. autosummary::
+   
+      ~QuantizedPULPConv2DParser.__init__
+      ~QuantizedPULPConv2DParser.parse
+      ~QuantizedPULPConv2DParser.parseInputs
+      ~QuantizedPULPConv2DParser.parseNode
+      ~QuantizedPULPConv2DParser.parseNodeCtxt
+      ~QuantizedPULPConv2DParser.parseOutputs
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~QuantizedPULPConv2DParser.operatorRepresentation
+   
+   

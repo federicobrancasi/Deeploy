@@ -1,0 +1,35 @@
+Deeploy.Targets.Generic.Parsers.GenericBatchNorm2DParser
+========================================================
+
+.. currentmodule:: Deeploy.Targets.Generic.Parsers
+
+.. autoclass:: GenericBatchNorm2DParser
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+   
+   
+   .. rubric:: Methods
+   .. automethod:: __init__
+
+   .. autosummary::
+   
+      ~GenericBatchNorm2DParser.__init__
+      ~GenericBatchNorm2DParser.parse
+      ~GenericBatchNorm2DParser.parseInputs
+      ~GenericBatchNorm2DParser.parseNode
+      ~GenericBatchNorm2DParser.parseNodeCtxt
+      ~GenericBatchNorm2DParser.parseOutputs
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~GenericBatchNorm2DParser.operatorRepresentation
+   
+   
