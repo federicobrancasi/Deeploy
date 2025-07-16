@@ -425,7 +425,7 @@ PULPQuantizedGEMMBindings = [
 PULPQuantizedConv2DBindings = [
     NodeBinding(
         ConvChecker([PointerClass(int8_t), PointerClass(int8_t),
-                     PointerClass(int32_t)], [PointerClass(int32_t)]), IntConvTemplate.reference2DTemplate,
+                     PointerClass(int32_t)], [PointerClass(int32_t)]), IntConvTemplate.reference2DIm2ColTemplate,
         ForkTransformer)
 ]
 
@@ -499,7 +499,7 @@ PULPDequantBindings = [
 PULPQuantizedConv2DBindings = [
     NodeBinding(
         ConvChecker([PointerClass(int8_t), PointerClass(int8_t),
-                     PointerClass(int32_t)], [PointerClass(int32_t)]), IntConvTemplate.reference2DTemplate,
+                     PointerClass(int32_t)], [PointerClass(int32_t)]), IntConvTemplate.reference2DIm2ColTemplate,
         ForkTransformer)
 ]
 
